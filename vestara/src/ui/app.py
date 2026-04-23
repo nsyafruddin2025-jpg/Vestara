@@ -278,6 +278,12 @@ elif page == "📊 Feasibility Analysis":
                 current_contribution=result["monthly_required"],
             )
 
+            # HARD GATE: if ratio >100%, scenario optimizer is blocked
+            if scenarios.blocked_reason:
+                st.error("⚠️ Scenario Optimizer Blocked")
+                st.write(scenarios.blocked_reason)
+                st.stop()
+
             if scenarios.scenarios:
                 for i, s in enumerate(scenarios.scenarios):
                     with st.expander(f"📌 {s.lever.upper()}: {s.adjustment}", expanded=(i == 0)):

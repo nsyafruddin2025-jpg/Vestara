@@ -32,6 +32,7 @@ class ScenarioResult:
     recommended: Optional[Scenario]
     projection_years: list[float]
     projection_monthly: list[float]
+    blocked_reason: Optional[str] = None
 
 
 def compound_projection(monthly_salary: float, annual_growth: float, years: int) -> list[float]:
@@ -185,6 +186,25 @@ def run_scenario_analysis(
         monthly_salary, monthly_living_cost, compute_monthly_required(goal_cost, current_timeline)
     )
     current_verdict = "green" if current_ratio < GREEN_THRESHOLD else ("yellow" if current_ratio < 0.50 else "red")
+
+    # HARD GATE: block contribution lever when ratio >= 100%
+    disposable = monthly_salary - monthly_living_cost
+    if current_ratio >= 1.0:
+        return ScenarioResult(
+            current_ratio=current_ratio,
+            current_verdict="red",
+            scenarios=[],
+            recommended=None,
+            projection_years=list(range(current_timeline + 1)),
+            projection_monthly=compound_projection(monthly_salary, 0.08, current_timeline),
+            blocked_reason=(
+                "Your required monthly investment exceeds your entire disposable income. "
+                "Please consider: (1) reducing your goal size, or "
+                "(2) exploring a lower-cost city or neighbourhood. "
+                "Increasing your monthly contribution is not structurally available "
+                "when disposable income is fully consumed."
+            ),
+        )
 
     scenarios = []
 
