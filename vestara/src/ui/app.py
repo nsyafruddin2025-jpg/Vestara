@@ -24,6 +24,16 @@ st.set_page_config(
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "../../models")
 SYNTHETIC_DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data/synthetic_training_data.csv")
 
+# FIX 3: Instrument risk labels (Indonesian) — module level
+INSTRUMENT_RISK_LABELS = {
+    "reksa_dana_equity":           "High risk — nilai dapat turun signifikan",
+    "reksa_dana_pendapatan_tetap": "Medium risk — fluktuasi moderat",
+    "reksa_dana_pasar_uang":       "Very low risk — dijamin LPS hingga Rp 2M",
+    "reits":                       "Medium-high risk — terpengaruh pasar properti",
+    "obligasi_ori_sbr":            "Low risk — dijamin pemerintah, return tetap",
+    "deposito":                    "Very low risk — dijamin LPS hingga Rp 2M",
+}
+
 
 # ── Model loader ────────────────────────────────────────────────────────────────
 
@@ -180,6 +190,13 @@ if page == "🏗️ Goal Builder":
 
         st.success(f"### Estimated Cost: Rp {profile.estimated_cost:,.0f}")
         st.caption(f"**{profile.description}** | {profile.timeline_years} years")
+
+        # FIX 4: Data freshness warning — appended to every cost estimate
+        st.warning(
+            "⚠️ Estimasi biaya berdasarkan data 2025. "
+            "Harga aktual dapat berbeda ±15-20%. "
+            "Verifikasi dengan agen properti atau institusi terkait sebelum mengambil keputusan."
+        )
 
         # Store in session state
         st.session_state["goal_profile"] = profile.to_dict()
@@ -385,7 +402,47 @@ elif page == "💼 Portfolio Recommendation":
 
     monthly_contribution = st.session_state.get("monthly_contribution", goal["estimated_cost"] / (goal["timeline_years"] * 12))
 
-    st.markdown(f"### Portfolio for **{goal['goal_type']}** goal in **{goal['city']}**")
+    # FIX 1: Regulatory disclaimer — shown before any portfolio content
+    st.error(
+        "⚠️ **Vestara provides educational goal planning tools only.** "
+        "This illustrative portfolio is not personalized investment advice. "
+        "Consult a licensed OJK financial advisor before making any investment decision. "
+        "Vestara is not licensed under POJK 21/2011."
+    )
+
+    # FIX 2: Initial Disclosure Document expander
+    with st.expander("📋 Initial Disclosure / Penyingkapan Informasi Awal (POJK 21/2011)"):
+        st.markdown("#### Apa yang Vestara lakukan dan tidak lakukan")
+        st.markdown("""
+        **Vestara MELAKUKAN:**
+        - Men_estimasi biaya tujuan keuangan berdasarkan data sintetis
+        - Memberikan gambaran alokasi instrument investasi berdasarkan profil risiko
+        - Menampilkan proyeksi pertumbuhan berdasarkan asumsi return historis
+
+        **Vestara TIDAK MELAKUKAN:**
+        - Memberikan nasihat investasi yang dipersonalisasi
+        - Memproses transaksi investasi atas nama pengguna
+        - Menjamin keakuratan estimasi biaya atau proyeksi return
+        """)
+        st.markdown("---")
+        st.markdown("#### Keterbatasan Model")
+        st.markdown("""
+        - **Data latih:** Model ini dilatih pada **data sintetis**, bukan data pasar nyata Indonesia.
+          Hasil alokasi bersifat ilustratif, bukan rekomendasi yang dijamin.
+        - **Estimasi biaya:** Semua estimasi biaya adalah **aproksimasi dengan ketidakpastian ±15-20%**.
+          Harga aktual dapat berbeda signifikan tergantung lokasi, waktu, dan kondisi pasar.
+        - **Return historis tidak menjamin return masa depan:** Kinerja instrument investasi
+          di masa lalu bukan indikasi kinerja di masa depan.
+        """)
+        st.markdown("---")
+        st.markdown("#### Sumber Referensi")
+        st.markdown(
+            "- 📘 **Edukasi Investor OJK:** [sifikasiuangmu.ojk.go.id](https://sifikasiuangmu.ojk.go.id) "
+            "— Portal edukasi keuangan Otoritas Jasa Keuangan Indonesia"
+        )
+
+    st.markdown("---")
+    st.markdown(f"#### Ilustrative Allocation — **{goal['goal_type']}** goal in **{goal['city']}**")
     st.markdown(f"**Risk Profile: {risk['profile']}** | Monthly investment: **Rp {monthly_contribution:,.0f}**")
 
     result = build_portfolio(
@@ -395,17 +452,30 @@ elif page == "💼 Portfolio Recommendation":
         timeline_years=goal["timeline_years"],
     )
 
+    # FIX 5: Lumpy goal equity warning — for Property goals with short timeline and high equity
+    equity_pct = next((a.percentage for a in result.allocations if a.instrument == "reksa_dana_equity"), 0)
+    is_property_short = (goal["goal_type"] == "Property" and goal["timeline_years"] < 5)
+    if is_property_short and equity_pct > 20:
+        st.warning(
+            "⚠️ **Peringatan Tujuan Properti:** "
+            "Tujuan properti membutuhkan dana pada tanggal tertentu. "
+            "Reksa Dana Saham dapat turun signifikan menjelang tanggal target. "
+            "Pertimbangkan alokasi lebih konservatif untuk mengurangi risiko timing."
+        )
+
     st.markdown("---")
     st.markdown("#### 📊 Monthly Allocation")
 
+    # FIX 3: Allocation table with instrument risk labels
     alloc_rows = []
     for a in result.allocations:
+        risk_label = INSTRUMENT_RISK_LABELS.get(a.instrument, "")
         alloc_rows.append({
             "Instrument": PORT_LABELS[a.instrument],
-            "% of Portfolio": f"{a.percentage:.1f}%",
-            "Monthly Amount (IDR)": f"Rp {a.monthly_amount:,.0f}",
-            "Expected Annual Return": f"{a.expected_return:.1%}",
-            "10-Year Growth": f"{a.expected_growth_10yr:.1%}",
+            "%": f"{a.percentage:.1f}%",
+            "Monthly (IDR)": f"Rp {a.monthly_amount:,.0f}",
+            "Expected Return": f"{a.expected_return:.1%}",
+            "Risk": risk_label,
         })
     st.dataframe(pd.DataFrame(alloc_rows), use_container_width=True, hide_index=True)
 
@@ -424,14 +494,13 @@ elif page == "💼 Portfolio Recommendation":
         st.success(f"✅ On track — projected value exceeds goal by **Rp {abs(shortfall):,.0f}**")
 
     st.markdown("---")
-    st.markdown("#### 📈 Growth Trajectory to Your Goal")
+    st.markdown("#### 📈 Growth Trajectory — Ilustratif")
 
     trajectory_df = pd.DataFrame(
         [{"Year": year, "Projected Value (IDR)": value} for year, value in result.yearly_trajectory],
     )
     trajectory_df = trajectory_df.set_index("Year")
 
-    # Goal reference line
     goal_amount = result.goal_amount
 
     st.line_chart(
@@ -439,8 +508,11 @@ elif page == "💼 Portfolio Recommendation":
         y="Projected Value (IDR)",
         height=320,
     )
-    st.caption(f"Goal target: **Rp {goal_amount:,.0f}** at year {result.timeline_years} | "
-               f"Projected: **Rp {result.projected_value_at_goal_year:,.0f}**")
+    st.caption(
+        f"Goal target: **Rp {goal_amount:,.0f}** at year {result.timeline_years} | "
+        f"Projected: **Rp {result.projected_value_at_goal_year:,.0f}** "
+        f"(ilustratif, bukan jaminan)"
+    )
 
 
 # ── Page 5: Dashboard ──────────────────────────────────────────────────────────
