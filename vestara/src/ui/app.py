@@ -1,6 +1,7 @@
 """
 Vestara — Goal-First Investment Platform
 Streamlit UI — wraps Goal Builder, Feasibility Engine, and Portfolio Optimizer.
+Dark mode fintech redesign.
 """
 
 import streamlit as st
@@ -10,7 +11,8 @@ import pickle
 import os
 
 from vestara.src.engine.goal_builder import GoalBuilder
-from vestara.src.engine.risk_profiler import RiskProfiler, RISK_QUESTIONS, INSTRUMENT_LABELS
+from vestara.src.engine.risk_profiler import RiskProfiler, RISK_QUESTIONS
+from vestara.src.portfolio.optimizer import INSTRUMENT_LABELS
 from vestara.src.portfolio.optimizer import build_portfolio, INSTRUMENT_LABELS as PORT_LABELS
 from vestara.data.cost_data import LIVING_COST_MONTHLY, GOAL_TYPES
 
@@ -20,6 +22,398 @@ st.set_page_config(
     page_icon="🏠",
     layout="wide",
 )
+
+# ── Global Dark Mode CSS ─────────────────────────────────────────────────────────
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Remove default Streamlit padding */
+.block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+.main .block-container { padding-left: 2rem !important; padding-right: 2rem !important; }
+
+/* Dark background */
+[data-testid="stApp"] { background-color: #0A0A0F !important; }
+[data-testid="stSidebar"] { background-color: #0D0D14 !important; border-right: 1px solid #1E1E2E !important; }
+.st-ca { background-color: #13131A !important; }
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { color: #F8FAFC !important; font-weight: 700 !important; }
+p, span, div { color: #94A3B8 !important; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0A0A0F; }
+::-webkit-scrollbar-thumb { background: #1E1E2E; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
+
+/* Cards */
+.vestara-card {
+    background-color: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Metric display */
+.vestara-metric {
+    text-align: center;
+    padding: 1rem;
+}
+.vestara-metric .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #7C3AED !important;
+    font-family: 'Inter', monospace;
+}
+.vestara-metric .metric-label {
+    font-size: 0.85rem;
+    color: #94A3B8 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Verdict cards */
+.verdict-green { border: 2px solid #10B981; box-shadow: 0 0 30px rgba(16,185,129,0.15); }
+.verdict-yellow { border: 2px solid #F59E0B; box-shadow: 0 0 30px rgba(245,158,11,0.15); }
+.verdict-red { border: 2px solid #EF4444; box-shadow: 0 0 30px rgba(239,68,68,0.15); }
+
+/* Purple gradient button */
+.st-dg > div > button:first-child {
+    background: linear-gradient(135deg, #7C3AED, #6D28D9) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease !important;
+}
+.st-dg > div > button:first-child:hover {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED) !important;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.4) !important;
+}
+
+/* Input fields */
+[data-testid="stTextInput"] input,
+[data-testid="stNumberInput"] input,
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stTextArea"] textarea {
+    background-color: #13131A !important;
+    border: 1px solid #1E1E2E !important;
+    color: #F8FAFC !important;
+    border-radius: 10px !important;
+}
+[data-testid="stTextInput"] input:focus,
+[data-testid="stNumberInput"] input:focus,
+[data-testid="stSelectbox"] > div > div:focus,
+[data-testid="stTextArea"] textarea:focus {
+    border-color: #7C3AED !important;
+    box-shadow: 0 0 0 2px rgba(124,58,237,0.2) !important;
+}
+
+/* Radio buttons */
+[data-testid="stRadio"] label { color: #F8FAFC !important; }
+[data-testid="stRadio"] label:hover { color: #7C3AED !important; }
+
+/* Slider */
+.st-abq .css-1aehpvj { background-color: #7C3AED !important; }
+.st-abq .css-1632mt { background-color: #1E1E2E !important; }
+
+/* Progress bar */
+.st-cj .css-1v0mbg9 { background-color: #7C3AED !important; }
+
+/* Sidebar navigation */
+[data-testid="stSidebarNav"] span { color: #F8FAFC !important; }
+[data-testid="stSidebarNav"] span:hover { color: #7C3AED !important; }
+
+/* Info/warning/success boxes */
+.st-em { border-radius: 12px !important; }
+
+/* Dataframe */
+[data-testid="stDataFrame"] { background-color: #13131A !important; }
+
+/* Expander */
+details { background-color: #13131A !important; border: 1px solid #1E1E2E !important; border-radius: 12px !important; }
+summary { color: #F8FAFC !important; }
+
+/* Hero gradient underline */
+.hero-title {
+    position: relative;
+    display: inline-block;
+}
+.hero-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #7C3AED, #06B6D4);
+    border-radius: 2px;
+}
+
+/* Goal type card grid */
+.goal-card {
+    background: #13131A;
+    border: 2px solid #1E1E2E;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.goal-card:hover { border-color: #7C3AED; transform: translateY(-2px); }
+.goal-card.selected { border-color: #7C3AED; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+.goal-card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.goal-card-title { font-weight: 600; color: #F8FAFC; font-size: 1rem; }
+.goal-card-desc { font-size: 0.8rem; color: #94A3B8; margin-top: 0.25rem; }
+
+/* Cost display */
+.cost-display {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7C3AED, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Inter', monospace;
+}
+
+/* Risk badge */
+.risk-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.risk-high { background: rgba(239,68,68,0.15); color: #EF4444; }
+.risk-medium { background: rgba(245,158,11,0.15); color: #F59E0B; }
+.risk-low { background: rgba(16,185,129,0.15); color: #10B981; }
+
+/* Summary card row */
+.summary-card {
+    background: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* Hide Streamlit branding */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+
+/* Remove extra whitespace */
+element.style { margin-bottom: 0rem; }
+
+/* Verdict large text */
+.verdict-text {
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+/* Scenario card */
+.scenario-card {
+    background: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+.scenario-lever {
+    display: inline-block;
+    background: linear-gradient(135deg, #7C3AED, #06B6D4);
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    margin-right: 0.5rem;
+}
+
+/* Question card */
+.question-card {
+    background: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+.question-number {
+    display: inline-block;
+    background: linear-gradient(135deg, #7C3AED, #6D28D9);
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    margin-right: 0.75rem;
+}
+
+/* Score circle */
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 2rem;
+    font-weight: 800;
+}
+.score-circle.green { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.1)); border: 3px solid #10B981; color: #10B981; }
+.score-circle.yellow { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1)); border: 3px solid #F59E0B; color: #F59E0B; }
+.score-circle.red { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1)); border: 3px solid #EF4444; color: #EF4444; }
+
+/* Profile result card */
+.profile-card {
+    background: #13131A;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+}
+.profile-card.konservatif { border: 2px solid #06B6D4; box-shadow: 0 0 30px rgba(6,182,212,0.15); }
+.profile-card.moderat { border: 2px solid #7C3AED; box-shadow: 0 0 30px rgba(124,58,237,0.15); }
+.profile-card.agresif { border: 2px solid #F59E0B; box-shadow: 0 0 30px rgba(245,158,11,0.15); }
+
+/* Allocation table */
+.allocation-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.allocation-table th {
+    color: #F8FAFC;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #1E1E2E;
+}
+.allocation-table td {
+    color: #94A3B8;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #1E1E2E;
+}
+.allocation-table tr:hover td { background-color: rgba(124,58,237,0.05); }
+
+/* Metric card row */
+.metric-col {
+    background: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+}
+.metric-col .metric-val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #7C3AED;
+    font-family: 'Inter', monospace;
+}
+.metric-col .metric-lbl {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+/* Health score */
+.health-score {
+    font-size: 4rem;
+    font-weight: 800;
+    text-align: center;
+}
+.health-score.excellent { color: #10B981; }
+.health-score.good { color: #06B6D4; }
+.health-score.needs_work { color: #F59E0B; }
+
+/* Disclaimer banner */
+.disclaimer-banner {
+    background: rgba(245,158,11,0.1);
+    border: 1px solid #F59E0B;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Goal progress card */
+.goal-progress-card {
+    background: #13131A;
+    border: 1px solid #1E1E2E;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+.goal-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 0.5rem;
+}
+.goal-meta {
+    font-size: 0.8rem;
+    color: #94A3B8;
+}
+
+/* Progress bar custom */
+.progress-bar-bg {
+    background: #1E1E2E;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 0.75rem;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+.progress-bar-fill.green { background: linear-gradient(90deg, #10B981, #059669); }
+.progress-bar-fill.yellow { background: linear-gradient(90deg, #F59E0B, #D97706); }
+.progress-bar-fill.red { background: linear-gradient(90deg, #EF4444, #DC2626); }
+
+/* Verdict badge pill */
+.verdict-pill {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.verdict-pill.green { background: rgba(16,185,129,0.15); color: #10B981; }
+.verdict-pill.yellow { background: rgba(245,158,11,0.15); color: #F59E0B; }
+.verdict-pill.red { background: rgba(239,68,68,0.15); color: #EF4444; }
+
+/* Sidebar brand */
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #F8FAFC !important;
+    margin-bottom: 0.25rem;
+}
+.sidebar-tagline {
+    font-size: 0.8rem;
+    color: #94A3B8 !important;
+    margin-bottom: 1.5rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# ── Model loader ────────────────────────────────────────────────────────────────
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "../../models")
 SYNTHETIC_DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data/synthetic_training_data.csv")
@@ -34,8 +428,6 @@ INSTRUMENT_RISK_LABELS = {
     "deposito":                    "Very low risk — dijamin LPS hingga Rp 2M",
 }
 
-
-# ── Model loader ────────────────────────────────────────────────────────────────
 
 @st.cache_resource
 def load_classifier():
@@ -70,7 +462,7 @@ def compute_feasibility(monthly_salary: float, city: str, goal_cost: float, time
     }
 
 
-# ── Verdict display ─────────────────────────────────────────────────────────────
+# ── Verdict display helpers ────────────────────────────────────────────────────
 
 def verdict_badge(verdict: str) -> str:
     colors = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
@@ -88,10 +480,15 @@ def render_verdict(verdict: str, ratio: float, monthly_required: float, monthly_
         st.metric("Investment-to-Salary Ratio", f"{ratio:.1%}")
 
 
+def format_idr(amount: float) -> str:
+    """Format IDR with thousand separators: Rp 2.415.000.000"""
+    return f"Rp {amount:,.0f}".replace(",", ".")
+
+
 # ── Sidebar navigation ─────────────────────────────────────────────────────────
 
-st.sidebar.title("🏠 Vestara")
-st.sidebar.caption("Goal-first investment planning for Indonesia")
+st.sidebar.markdown('<div class="sidebar-brand">🏠 Vestara</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="sidebar-tagline">Goal-first investment planning for Indonesia</div>', unsafe_allow_html=True)
 page = st.sidebar.radio("Go to", [
     "🏗️ Goal Builder",
     "📊 Feasibility Analysis",
@@ -101,17 +498,76 @@ page = st.sidebar.radio("Go to", [
 ])
 
 
-# ── Page 1: Goal Builder ────────────────────────────────────────────────────────
+# ── Page 1: Goal Builder ──────────────────────────────────────────────────────
 
 if page == "🏗️ Goal Builder":
-    st.title("🏗️ Goal Builder")
-    st.markdown("### Tell us about your life goal")
+    st.markdown('<div class="hero-title" style="font-size:2rem;font-weight:800;color:#F8FAFC;">What\'s your financial goal?</div>', unsafe_allow_html=True)
+    st.markdown("#### Tell us about your life goal")
+    st.markdown("")
 
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        goal_type = st.selectbox("Goal Type", GOAL_TYPES)
-        city = st.selectbox("City", list(LIVING_COST_MONTHLY.keys()))
+    # Goal type card grid
+    goal_types_with_icons = [
+        ("🏠", "Property", "Rumah, apartemen, atau tanah"),
+        ("🎓", "Education", "Biaya sekolah dan universitas"),
+        ("🌴", "Retirement", "Dana pensiun nyaman"),
+        ("🎓", "Higher Education", "S2 / S3 luar negeri"),
+        ("💍", "Wedding", "Biaya pernikahan"),
+        ("🛡️", "Emergency Fund", "Dana darurat"),
+        ("✨", "Custom", "Tujuan kustom sendiri"),
+    ]
 
+    # Track selected goal
+    if "selected_goal" not in st.session_state:
+        st.session_state["selected_goal"] = None
+
+    st.markdown("##### Choose your goal type")
+    # Row 1: first 4 goals
+    row1 = goal_types_with_icons[:4]
+    cols = st.columns(4)
+    for idx, (icon, name, desc) in enumerate(row1):
+        with cols[idx]:
+            selected = st.session_state["selected_goal"] == name
+            card_class = "goal-card selected" if selected else "goal-card"
+            st.markdown(f"""
+            <div class="{card_class}" onclick="
+                const els = document.querySelectorAll('.goal-card');
+                els.forEach(e => e.classList.remove('selected'));
+                this.classList.add('selected');
+            ">
+                <div class="goal-card-icon">{icon}</div>
+                <div class="goal-card-title">{name}</div>
+                <div class="goal-card-desc">{desc}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("")
+    # Row 2: remaining 3 goals
+    row2 = goal_types_with_icons[4:]
+    cols2 = st.columns(3)
+    # Center the 3 cards
+    for idx, (icon, name, desc) in enumerate(row2):
+        with cols2[idx]:
+            selected = st.session_state["selected_goal"] == name
+            card_class = "goal-card selected" if selected else "goal-card"
+            st.markdown(f"""
+            <div class="{card_class}" onclick="
+                const els = document.querySelectorAll('.goal-card');
+                els.forEach(e => e.classList.remove('selected'));
+                this.classList.add('selected');
+            ">
+                <div class="goal-card-icon">{icon}</div>
+                <div class="goal-card-title">{name}</div>
+                <div class="goal-card-desc">{desc}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("")
+
+    # Goal type selector
+    goal_type = st.selectbox("Goal Type", GOAL_TYPES, index=None, placeholder="Select a goal type above")
+    city = st.selectbox("City", list(LIVING_COST_MONTHLY.keys()))
+
+    st.markdown("")
     st.markdown("---")
     st.markdown("#### Goal Details")
 
@@ -184,19 +640,29 @@ if page == "🏗️ Goal Builder":
 
     st.markdown("---")
 
-    if st.button("🎯 Estimate Goal Cost", type="primary"):
+    if st.button("Estimate Goal Cost", type="primary"):
         gb = GoalBuilder()
         profile = gb.build_goal(goal_type, city, answers)
 
-        st.success(f"### Estimated Cost: Rp {profile.estimated_cost:,.0f}")
-        st.caption(f"**{profile.description}** | {profile.timeline_years} years")
+        st.markdown(f"""
+        <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+            <div style="text-align:center;">
+                <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Estimated Cost</div>
+                <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown(f"**{profile.description}** | {profile.timeline_years} years")
 
         # FIX 4: Data freshness warning — appended to every cost estimate
-        st.warning(
-            "⚠️ Estimasi biaya berdasarkan data 2025. "
-            "Harga aktual dapat berbeda ±15-20%. "
-            "Verifikasi dengan agen properti atau institusi terkait sebelum mengambil keputusan."
-        )
+        st.markdown("""
+        <div style="background:rgba(245,158,11,0.1);border:1px solid #F59E0B;border-radius:12px;padding:1rem;margin-top:1rem;">
+            <span style="color:#F59E0B;font-weight:600;">⚠️ </span>
+            <span style="color:#94A3B8;">Estimasi biaya berdasarkan data 2025.
+            Harga aktual dapat berbeda ±15-20%.
+            Verifikasi dengan agen properti atau institusi terkait sebelum mengambil keputusan.</span>
+        </div>
+        """, unsafe_allow_html=True)
 
         # Store in session state
         st.session_state["goal_profile"] = profile.to_dict()
@@ -208,7 +674,7 @@ if page == "🏗️ Goal Builder":
 # ── Page 2: Feasibility Analysis ────────────────────────────────────────────────
 
 elif page == "📊 Feasibility Analysis":
-    st.title("📊 Feasibility Analysis")
+    st.title("Feasibility Analysis")
     st.markdown("### How achievable is your goal?")
 
     if "goal_set" not in st.session_state:
@@ -219,6 +685,7 @@ elif page == "📊 Feasibility Analysis":
 
     col1, col2 = st.columns(2)
     with col1:
+        st.markdown("#### Your Income")
         monthly_salary = st.number_input(
             "Monthly Take-Home Salary (IDR)", min_value=1_000_000,
             max_value=500_000_000, value=15_000_000, step=500_000,
@@ -230,14 +697,32 @@ elif page == "📊 Feasibility Analysis":
             format="%.1f%%", help="Average annual salary increase you expect over the investment horizon"
         )
     with col2:
-        st.metric("Goal Amount", f"Rp {goal['estimated_cost']:,.0f}")
-        st.metric("Timeline", f"{goal['timeline_years']} years")
-        st.metric("Goal Type", goal["goal_type"])
-        st.metric("City", goal["city"])
+        st.markdown("#### Goal Summary")
+        st.markdown(f"""
+        <div class="metric-col">
+            <div class="metric-val">{format_idr(goal['estimated_cost'])}</div>
+            <div class="metric-lbl">Goal Amount</div>
+        </div>
+        <div style="height:0.75rem;"></div>
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1.25rem;">{goal['timeline_years']} years</div>
+            <div class="metric-lbl">Timeline</div>
+        </div>
+        <div style="height:0.75rem;"></div>
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1rem;">{goal['goal_type']}</div>
+            <div class="metric-lbl">Goal Type</div>
+        </div>
+        <div style="height:0.75rem;"></div>
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1rem;">{goal['city']}</div>
+            <div class="metric-lbl">City</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    if st.button("🔍 Analyse Feasibility", type="primary"):
+    if st.button("Analyse Feasibility", type="primary"):
         result = compute_feasibility(
             monthly_salary=monthly_salary,
             city=goal["city"],
@@ -246,23 +731,53 @@ elif page == "📊 Feasibility Analysis":
             income_growth_rate=income_growth,
         )
 
-        render_verdict(
-            result["verdict"],
-            result["ratio"],
-            result["monthly_required"],
-            monthly_salary,
-        )
+        # Large verdict display
+        verdict_class_map = {"green": "verdict-green", "yellow": "verdict-yellow", "red": "verdict-red"}
+        verdict_text_map = {
+            "green": "DAPAT DICAPAI",
+            "yellow": "DAPAT DICAPAI DENGAN KONDISI",
+            "red": "TIDAK DAPAT DICAPAI",
+        }
+        verdict_icon_map = {"green": "✅", "yellow": "⚠️", "red": "❌"}
 
-        st.markdown("---")
-        st.markdown("#### Breakdown")
+        vc = verdict_class_map.get(result["verdict"], "verdict-green")
+        vt = verdict_text_map.get(result["verdict"], "DAPAT DICAPAI")
+        vi = verdict_icon_map.get(result["verdict"], "✅")
 
-        bd_col1, bd_col2, bd_col3 = st.columns(3)
-        with bd_col1:
-            st.metric("Monthly Living Cost", f"Rp {result['monthly_living']:,.0f}")
-        with bd_col2:
-            st.metric("Disposable Income", f"Rp {result['disposable']:,.0f}")
-        with bd_col3:
-            st.metric("Required Monthly Investment", f"Rp {result['monthly_required']:,.0f}")
+        st.markdown(f"""
+        <div class="vestara-card {vc}">
+            <div class="verdict-text">
+                <div style="font-size:3rem;margin-bottom:0.5rem;">{vi}</div>
+                <div style="font-size:2rem;font-weight:800;color:#F8FAFC;">{vt}</div>
+                <div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">with ratio {result['ratio']:.1%}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # 3-column metric cards
+        st.markdown("")
+        mc1, mc2, mc3 = st.columns(3)
+        with mc1:
+            st.markdown(f"""
+            <div class="metric-col">
+                <div class="metric-val">{format_idr(result['monthly_living'])}</div>
+                <div class="metric-lbl">Monthly Living Cost</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mc2:
+            st.markdown(f"""
+            <div class="metric-col">
+                <div class="metric-val">{format_idr(result['disposable'])}</div>
+                <div class="metric-lbl">Disposable Income</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mc3:
+            st.markdown(f"""
+            <div class="metric-col">
+                <div class="metric-val">{format_idr(result['monthly_required'])}</div>
+                <div class="metric-lbl">Required Monthly Investment</div>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.session_state["feasibility_result"] = result
         st.session_state["monthly_contribution"] = result["monthly_required"]
@@ -272,17 +787,23 @@ elif page == "📊 Feasibility Analysis":
         st.session_state["income_growth"] = income_growth
 
         if result["verdict"] in ("yellow", "red"):
+            st.markdown("")
             st.markdown("---")
-            st.markdown("#### 🔄 Scenario Analysis — How to flip to Green?")
-            st.info("""
-**Priority adjustments** (easiest to hardest):
-1. **Extend timeline** — giving your money more time to compound
-2. **Adjust location** — choosing a lower-cost city or neighbourhood
-3. **Reduce goal size** — a smaller target with the same timeline
-4. **Increase monthly contribution** — investing more each month
-
-*Below are the minimum viable changes calculated for your profile.*
-""")
+            st.markdown("#### Scenario Analysis — How to flip to Green?")
+            st.markdown("""
+            <div style="background:rgba(124,58,237,0.1);border:1px solid #7C3AED;border-radius:12px;padding:1rem;margin-bottom:1.5rem;">
+                <div style="color:#F8FAFC;font-weight:600;margin-bottom:0.5rem;">Priority adjustments (easiest to hardest):</div>
+                <div style="color:#94A3B8;font-size:0.9rem;">
+                    <div>1. <strong>Extend timeline</strong> — giving your money more time to compound</div>
+                    <div>2. <strong>Adjust location</strong> — choosing a lower-cost city or neighbourhood</div>
+                    <div>3. <strong>Reduce goal size</strong> — a smaller target with the same timeline</div>
+                    <div>4. <strong>Increase monthly contribution</strong> — investing more each month</div>
+                </div>
+                <div style="color:#94A3B8;font-size:0.85rem;margin-top:0.75rem;font-style:italic;">
+                    Below are the minimum viable changes calculated for your profile.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
             from vestara.src.engine.scenario_optimizer import run_scenario_analysis
 
@@ -304,9 +825,11 @@ elif page == "📊 Feasibility Analysis":
 
             if scenarios.scenarios:
                 for i, s in enumerate(scenarios.scenarios):
+                    verdict_pill_class = "green" if s.verdict == "green" else ("yellow" if s.verdict == "yellow" else "red")
                     with st.expander(f"📌 {s.lever.upper()}: {s.adjustment}", expanded=(i == 0)):
                         st.write(s.change_description)
-                        st.write(f"New investment ratio: **{s.new_ratio:.1%}** → Verdict: **{s.verdict.upper()}**")
+                        st.write(f"New investment ratio: **{s.new_ratio:.1%}**")
+                        st.markdown(f"Verdict: <span class='verdict-pill {verdict_pill_class}'>{s.verdict.upper()}</span>", unsafe_allow_html=True)
                         if i == 0:
                             st.session_state["recommended_scenario"] = s
             else:
@@ -316,7 +839,7 @@ elif page == "📊 Feasibility Analysis":
 # ── Page 3: Risk Profiler ───────────────────────────────────────────────────────
 
 elif page == "📋 Risk Profiler":
-    st.title("📋 Risk Profiler")
+    st.title("Risk Profiler")
     st.markdown("### 12 questions to find your Indonesian investment profile")
 
     if "risk_answers" not in st.session_state:
@@ -332,11 +855,25 @@ elif page == "📋 Risk Profiler":
     end = min(start + QUESTIONS_PER_PAGE, len(RISK_QUESTIONS))
     page_questions = RISK_QUESTIONS[start:end]
 
-    st.progress(min(end / len(RISK_QUESTIONS), 1.0))
-    st.caption(f"Questions {start + 1}–{end} of {len(RISK_QUESTIONS)}")
+    # Purple progress bar
+    progress_val = min(end / len(RISK_QUESTIONS), 1.0)
+    st.markdown(f"""
+    <div style="background:#1E1E2E;border-radius:999px;height:8px;margin-bottom:0.5rem;">
+        <div style="background:linear-gradient(90deg,#7C3AED,#06B6D4);height:100%;border-radius:999px;width:{int(progress_val*100)}%;transition:width 0.3s ease;"></div>
+    </div>
+    <div style="color:#94A3B8;font-size:0.8rem;">Questions {start + 1}–{end} of {len(RISK_QUESTIONS)}</div>
+    """, unsafe_allow_html=True)
 
     for q in page_questions:
-        st.markdown(f"**{q['id'].replace('q', 'Q').replace('_', ' ').title()}. {q['question']}**")
+        q_num = q['id'].replace('q', '').replace('_', ' ')
+        st.markdown(f"""
+        <div class="question-card">
+            <div style="margin-bottom:0.75rem;">
+                <span class="question-number">{q_num}</span>
+                <span style="color:#F8FAFC;font-weight:600;">{q['question']}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         selected = st.radio(
             label=q["id"],
             options=[f"{i+1}. {opt['text']}" for i, opt in enumerate(q["options"])],
@@ -361,6 +898,7 @@ elif page == "📋 Risk Profiler":
                 st.rerun()
 
     if len(answers) == 12:
+        st.markdown("")
         st.markdown("---")
         st.success("🎉 All questions answered!")
         rp = RiskProfiler()
@@ -368,9 +906,27 @@ elif page == "📋 Risk Profiler":
             rp.submit_answer(qid, score)
         profile = rp.get_profile()
 
-        st.markdown(f"### Your Risk Profile: **{profile.profile}**")
-        st.markdown(f"**Score: {profile.score}/{profile.max_score} ({profile.percentage}%)**")
-        st.info(profile.description)
+        # Score circle
+        score_class = "green" if profile.percentage >= 70 else ("yellow" if profile.percentage >= 40 else "red")
+        st.markdown(f"""
+        <div class="profile-card" style="margin-bottom:1.5rem;">
+            <div class="score-circle {score_class}">{profile.score}/{profile.max_score}</div>
+            <div style="text-align:center;margin-top:0.75rem;">
+                <span class="verdict-pill {score_class}" style="font-size:0.85rem;">{profile.percentage}%</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Profile result
+        profile_class = profile.profile.lower()
+        profile_border_class = "konservatif" if profile.profile == "Konservatif" else ("moderat" if profile.profile == "Moderat" else "agresif")
+        st.markdown(f"""
+        <div class="profile-card {profile_border_class}" style="margin-bottom:1.5rem;">
+            <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Your Risk Profile</div>
+            <div style="font-size:1.75rem;font-weight:800;color:#F8FAFC;margin-bottom:0.5rem;">{profile.profile}</div>
+            <div style="color:#94A3B8;font-size:0.9rem;">{profile.description}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown("#### Recommended Asset Allocation")
         alloc_data = []
@@ -388,7 +944,7 @@ elif page == "📋 Risk Profiler":
 # ── Page 4: Portfolio Recommendation ──────────────────────────────────────────
 
 elif page == "💼 Portfolio Recommendation":
-    st.title("💼 Portfolio Recommendation")
+    st.title("Portfolio Recommendation")
 
     if "goal_set" not in st.session_state:
         st.warning("⚠️ Please complete **Goal Builder** first.")
@@ -402,13 +958,18 @@ elif page == "💼 Portfolio Recommendation":
 
     monthly_contribution = st.session_state.get("monthly_contribution", goal["estimated_cost"] / (goal["timeline_years"] * 12))
 
-    # FIX 1: Regulatory disclaimer — shown before any portfolio content
-    st.error(
-        "⚠️ **Vestara provides educational goal planning tools only.** "
-        "This illustrative portfolio is not personalized investment advice. "
-        "Consult a licensed OJK financial advisor before making any investment decision. "
-        "Vestara is not licensed under POJK 21/2011."
-    )
+    # FIX 1: Regulatory disclaimer — shown before any portfolio content (amber/OJK style)
+    st.markdown("""
+    <div class="disclaimer-banner">
+        <div style="color:#F59E0B;font-weight:700;font-size:1rem;margin-bottom:0.25rem;">⚠️ Disclaimer</div>
+        <div style="color:#94A3B8;font-size:0.9rem;">
+            <strong>Vestara provides educational goal planning tools only.</strong>
+            This illustrative portfolio is not personalized investment advice.
+            Consult a licensed <strong>OJK financial advisor</strong> before making any investment decision.
+            Vestara is not licensed under POJK 21/2011.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # FIX 2: Initial Disclosure Document expander
     with st.expander("📋 Initial Disclosure / Penyingkapan Informasi Awal (POJK 21/2011)"):
@@ -441,7 +1002,7 @@ elif page == "💼 Portfolio Recommendation":
             "— Portal edukasi keuangan Otoritas Jasa Keuangan Indonesia"
         )
 
-    st.markdown("---")
+    st.markdown("")
     st.markdown(f"#### Ilustrative Allocation — **{goal['goal_type']}** goal in **{goal['city']}**")
     st.markdown(f"**Risk Profile: {risk['profile']}** | Monthly investment: **Rp {monthly_contribution:,.0f}**")
 
@@ -463,13 +1024,14 @@ elif page == "💼 Portfolio Recommendation":
             "Pertimbangkan alokasi lebih konservatif untuk mengurangi risiko timing."
         )
 
-    st.markdown("---")
-    st.markdown("#### 📊 Monthly Allocation")
+    st.markdown("")
+    st.markdown("#### Monthly Allocation")
 
     # FIX 3: Allocation table with instrument risk labels
     alloc_rows = []
     for a in result.allocations:
         risk_label = INSTRUMENT_RISK_LABELS.get(a.instrument, "")
+        risk_badge_class = "risk-high" if "High" in risk_label else ("risk-medium" if "Medium" in risk_label else "risk-low")
         alloc_rows.append({
             "Instrument": PORT_LABELS[a.instrument],
             "%": f"{a.percentage:.1f}%",
@@ -481,20 +1043,35 @@ elif page == "💼 Portfolio Recommendation":
 
     col_summary1, col_summary2, col_summary3 = st.columns(3)
     with col_summary1:
-        st.metric("Blended Expected Return", f"{result.blended_return:.2%}")
+        st.markdown(f"""
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1.1rem;">{result.blended_return:.2%}</div>
+            <div class="metric-lbl">Blended Expected Return</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col_summary2:
-        st.metric("Blended Volatility", f"{result.blended_volatility:.2%}")
+        st.markdown(f"""
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1.1rem;">{result.blended_volatility:.2%}</div>
+            <div class="metric-lbl">Blended Volatility</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col_summary3:
-        st.metric("Projected Value at Goal Year", f"Rp {result.projected_value_at_goal_year:,.0f}")
+        st.markdown(f"""
+        <div class="metric-col">
+            <div class="metric-val" style="font-size:1rem;">{format_idr(result.projected_value_at_goal_year)}</div>
+            <div class="metric-lbl">Projected Value at Goal Year</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     shortfall = result.goal_amount - result.projected_value_at_goal_year
     if shortfall > 0:
-        st.error(f"⚠️ Projected shortfall of **Rp {shortfall:,.0f}** — consider increasing monthly contribution or extending timeline.")
+        st.error(f"⚠️ Projected shortfall of **{format_idr(shortfall)}** — consider increasing monthly contribution or extending timeline.")
     else:
-        st.success(f"✅ On track — projected value exceeds goal by **Rp {abs(shortfall):,.0f}**")
+        st.success(f"✅ On track — projected value exceeds goal by **{format_idr(abs(shortfall))}**")
 
-    st.markdown("---")
-    st.markdown("#### 📈 Growth Trajectory — Ilustratif")
+    st.markdown("")
+    st.markdown("#### Growth Trajectory — Ilustrative")
 
     trajectory_df = pd.DataFrame(
         [{"Year": year, "Projected Value (IDR)": value} for year, value in result.yearly_trajectory],
@@ -509,8 +1086,8 @@ elif page == "💼 Portfolio Recommendation":
         height=320,
     )
     st.caption(
-        f"Goal target: **Rp {goal_amount:,.0f}** at year {result.timeline_years} | "
-        f"Projected: **Rp {result.projected_value_at_goal_year:,.0f}** "
+        f"Goal target: **{format_idr(goal_amount)}** at year {result.timeline_years} | "
+        f"Projected: **{format_idr(result.projected_value_at_goal_year)}** "
         f"(ilustratif, bukan jaminan)"
     )
 
@@ -518,36 +1095,85 @@ elif page == "💼 Portfolio Recommendation":
 # ── Page 5: Dashboard ──────────────────────────────────────────────────────────
 
 elif page == "📈 Dashboard":
-    st.title("📈 Dashboard")
+    st.title("Dashboard")
 
     has_goal = st.session_state.get("goal_set", False)
     has_feasibility = st.session_state.get("feasibility_result") is not None
     has_risk = st.session_state.get("risk_profile_set", False)
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Goal Set", "✅ Yes" if has_goal else "❌ Not yet")
-    with col2:
-        st.metric("Feasibility Analysed", "✅ Yes" if has_feasibility else "❌ Not yet")
-    with col3:
-        st.metric("Risk Profiled", "✅ Yes" if has_risk else "❌ Not yet")
+    # 4 summary metric cards
+    sc1, sc2, sc3, sc4 = st.columns(4)
+    with sc1:
+        st.markdown(f"""
+        <div class="summary-card">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Goal Set</div>
+            <div style="font-size:1.25rem;font-weight:700;color:{'#10B981' if has_goal else '#EF4444'};">{'✅ Yes' if has_goal else '❌ Not yet'}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with sc2:
+        st.markdown(f"""
+        <div class="summary-card">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Feasibility Analysed</div>
+            <div style="font-size:1.25rem;font-weight:700;color:{'#10B981' if has_feasibility else '#EF4444'};">{'✅ Yes' if has_feasibility else '❌ Not yet'}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with sc3:
+        st.markdown(f"""
+        <div class="summary-card">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Risk Profiled</div>
+            <div style="font-size:1.25rem;font-weight:700;color:{'#10B981' if has_risk else '#EF4444'};">{'✅ Yes' if has_risk else '❌ Not yet'}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with sc4:
+        overall = [has_goal, has_feasibility, has_risk].count(True)
+        health_class = "excellent" if overall == 3 else ("good" if overall == 2 else "needs_work")
+        health_label = "Excellent" if overall == 3 else ("Good" if overall == 2 else "Needs Work")
+        st.markdown(f"""
+        <div class="summary-card">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Overall Health</div>
+            <div class="health-score {health_class}" style="font-size:1.5rem;">{health_label}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     if has_goal:
         goal = st.session_state["goal_profile"]
+        st.markdown("")
         st.markdown("---")
-        st.markdown("#### 🎯 Your Goal Summary")
-        st.json(goal)
+        st.markdown("#### Your Goal Summary")
+
+        verdict_pill_class = "green"
+        if has_feasibility:
+            fr = st.session_state.get("feasibility_result", {})
+            vf = fr.get("verdict", "green")
+            verdict_pill_class = vf
+
+        st.markdown(f"""
+        <div class="goal-progress-card">
+            <div class="goal-name">🏠 {goal['goal_type']} in {goal['city']}</div>
+            <div class="goal-meta">
+                <span>Timeline: {goal['timeline_years']} years</span> ·
+                <span>Amount: {format_idr(goal['estimated_cost'])}</span>
+            </div>
+            <div style="margin-top:0.75rem;">
+                <span class="verdict-pill {verdict_pill_class}">
+                    {f"Investment ratio: {st.session_state.get('feasibility_result', {}).get('ratio', 0):.1%}" if has_feasibility else "Pending analysis"}
+                </span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     if has_feasibility:
         result = st.session_state["feasibility_result"]
+        st.markdown("")
         st.markdown("---")
-        st.markdown("#### 📊 Feasibility Summary")
+        st.markdown("#### Feasibility Summary")
         st.json(result)
 
     if has_risk:
         risk = st.session_state["risk_profile"]
+        st.markdown("")
         st.markdown("---")
-        st.markdown("#### 📋 Risk Profile")
+        st.markdown("#### Risk Profile")
         st.json(risk)
 
     if all([has_goal, has_feasibility, has_risk]):
