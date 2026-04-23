@@ -18,6 +18,11 @@ from vestara.data.cost_data import (
     GOAL_TYPES,
 )
 
+# Buffers applied to raw base costs
+PROPERTY_BUFFER = 1.15   # 15% contingency: PPHTB + BPHTB + notary + price appreciation
+IDR_DEPRECIATION_RATE = 0.04  # IDR weakens ~4%/yr vs major currencies (2019–2024 avg)
+ABROAD_BUFFER = 1.10         # 10% buffer: application fees, living setup, exchange rate slippage
+
 
 @dataclass
 class GoalProfile:
@@ -84,7 +89,8 @@ class GoalBuilder:
         }
         sqm = size_map.get(size_label, 54)
         price_per_sqm = PROPERTY_PRICE_PER_SQM.get(city, PROPERTY_PRICE_PER_SQM["Jakarta Selatan"])
-        return sqm * price_per_sqm
+        base_cost = sqm * price_per_sqm
+        return base_cost * PROPERTY_BUFFER
 
     def estimate_education_cost(self, level: str, tier_label: str) -> float:
         tier_map = {
@@ -127,7 +133,10 @@ class GoalBuilder:
         mid = (annual_range[0] + annual_range[1]) / 2
         years = degree_years.get(degree, 4)
         multiplier = tier_multiplier.get(tier, 1.0)
-        return mid * years * multiplier
+        base_cost = mid * years * multiplier
+        # Currency depreciation: IDR weakens ~4%/yr + 10% buffer for fees/setup slippage
+        depreciated = base_cost * ((1 + IDR_DEPRECIATION_RATE) ** years) * ABROAD_BUFFER
+        return depreciated
 
     def estimate_wedding_cost(self, scale: str) -> float:
         scale_map = {

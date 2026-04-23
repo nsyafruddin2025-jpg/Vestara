@@ -67,12 +67,49 @@ class PortfolioProjection:
 
 
 def compute_blended_return(allocations: list[PortfolioAllocation]) -> float:
-    return sum(a.percentage * a.expected_return for a in allocations)
+    # percentage is e.g. 30.0 (%), expected_return is 0.045 (decimal)
+    # Sum of (pct/100 * rate) gives decimal annual rate, e.g. 0.06125 (6.125%)
+    return sum((a.percentage / 100) * a.expected_return for a in allocations)
 
 
 def compute_blended_volatility(allocations: list[PortfolioAllocation]) -> float:
-    # Simplified: weighted average volatility (ignores correlation for MVP)
-    return sum(a.percentage * VOLATILITY.get(a.instrument, 0.05) for a in allocations)
+    # Same decimal conversion for volatility
+    return sum((a.percentage / 100) * VOLATILITY.get(a.instrument, 0.05) for a in allocations)
+
+
+def apply_equity_cap_for_short_timeline(
+    raw: dict[str, float], timeline_years: int
+) -> dict[str, float]:
+    """
+    Cap equity and REITs for short timelines (< 3 years).
+
+    Equity-heavy allocations are inappropriate when the goal is near —
+    markets can drop 30–40% right before the deadline, wiping out the goal.
+    Cap: equity ≤ 40%, REITs ≤ 10%, fill remaining with obligasi_ori_sbr and deposito.
+    """
+    if timeline_years >= 3:
+        return raw
+
+    equity_cap = 40.0
+    reits_cap = 10.0
+
+    equity_pct = raw.get("reksa_dana_equity", 0)
+    reits_pct = raw.get("reits", 0)
+
+    if equity_pct <= equity_cap and reits_pct <= reits_cap:
+        return raw  # already within limits
+
+    excess = (equity_pct - equity_cap) + (reits_pct - reits_cap)
+    raw["reksa_dana_equity"] = min(equity_pct, equity_cap)
+    raw["reits"] = min(reits_pct, reits_cap)
+
+    # Distribute excess to safer instruments
+    if "obligasi_ori_sbr" in raw:
+        raw["obligasi_ori_sbr"] = min(raw["obligasi_ori_sbr"] + excess, 60.0)
+    elif "deposito" in raw:
+        raw["deposito"] = min(raw["deposito"] + excess, 60.0)
+
+    return raw
 
 
 def project_growth(
@@ -134,6 +171,9 @@ def build_portfolio(
             "reksa_dana_equity": 65,
             "reits": 25,
         }
+
+    # HARD CAP: short timelines cannot tolerate equity drawdown
+    raw = apply_equity_cap_for_short_timeline(raw, timeline_years)
 
     total = sum(raw.values())
     raw = {k: v / total * 100 for k, v in raw.items()}

@@ -139,6 +139,64 @@ def generate_synthetic_dataset(n_samples: int = 5000) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+REGRESSION_FEATURES = [
+    "monthly_salary",
+    "city_living_cost_index",
+    "goal_cost",
+    "timeline_years",
+    "income_growth_rate",
+    "monthly_living_cost",
+    "disposable_income",
+]
+
+
+def generate_regression_dataset(n_samples: int = 5000) -> pd.DataFrame:
+    """
+    Generate synthetic data for the regression model.
+    Target: months_to_achieve_goal = goal_cost / (disposable × sustainable_rate)
+    sustainable_rate = 0.25 (conservative 25% of disposable income)
+    """
+    rows = []
+
+    for _ in range(n_samples):
+        bucket = np.random.choice(SALARY_BUCKETS, p=[0.40, 0.45, 0.15])
+        monthly_salary = np.random.uniform(*SALARY_DISTRIBUTION[bucket])
+        city = np.random.choice(CITIES)
+        monthly_living_cost = LIVING_COST_MONTHLY[city]
+        income_growth_rate = np.random.uniform(*INCOME_GROWTH_RATE_ANNUAL[bucket])
+        goal_type = np.random.choice(GOAL_TYPES)
+        goal_cost = generate_goal_cost(goal_type, city)
+        timeline_years = np.random.randint(3, 31)
+        living_cost_index = list(LIVING_COST_MONTHLY.keys()).index(city) + 1
+        disposable = compute_disposable_income(monthly_salary, monthly_living_cost)
+
+        # Regression target: months needed to reach goal if investing 25% of disposable
+        SUSTAINABLE_RATE = 0.25
+        monthly_investment_capacity = disposable * SUSTAINABLE_RATE
+        if monthly_investment_capacity > 0:
+            months_to_goal = goal_cost / monthly_investment_capacity
+        else:
+            months_to_goal = 999  # effectively unreachable
+
+        rows.append(
+            {
+                "monthly_salary": round(monthly_salary),
+                "city": city,
+                "city_living_cost_index": living_cost_index,
+                "goal_type": goal_type,
+                "goal_cost": round(goal_cost),
+                "timeline_years": timeline_years,
+                "income_growth_rate": round(income_growth_rate, 4),
+                "monthly_living_cost": round(monthly_living_cost),
+                "disposable_income": round(disposable),
+                "months_to_achieve_goal": round(months_to_goal, 1),
+                "goal_type_is_abroad": 1 if goal_type == "Higher Education" else 0,
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
 TRAINING_FEATURES = [
     "monthly_salary",
     "city_living_cost_index",
