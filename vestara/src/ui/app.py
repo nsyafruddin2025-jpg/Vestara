@@ -276,6 +276,7 @@ elif page == "📊 Feasibility Analysis":
                 monthly_living_cost=monthly_living,
                 current_timeline=goal["timeline_years"],
                 current_contribution=result["monthly_required"],
+                goal_type=goal["goal_type"],
             )
 
             # HARD GATE: if ratio >100%, scenario optimizer is blocked
@@ -426,9 +427,20 @@ elif page == "💼 Portfolio Recommendation":
     st.markdown("#### 📈 Growth Trajectory to Your Goal")
 
     trajectory_df = pd.DataFrame(
-        [{"Year": year, "Projected Value (IDR)": f"Rp {value:,.0f}"} for year, value in result.yearly_trajectory],
+        [{"Year": year, "Projected Value (IDR)": value} for year, value in result.yearly_trajectory],
     )
-    st.dataframe(trajectory_df, use_container_width=True, hide_index=True)
+    trajectory_df = trajectory_df.set_index("Year")
+
+    # Goal reference line
+    goal_amount = result.goal_amount
+
+    st.line_chart(
+        trajectory_df,
+        y="Projected Value (IDR)",
+        height=320,
+    )
+    st.caption(f"Goal target: **Rp {goal_amount:,.0f}** at year {result.timeline_years} | "
+               f"Projected: **Rp {result.projected_value_at_goal_year:,.0f}**")
 
 
 # ── Page 5: Dashboard ──────────────────────────────────────────────────────────
