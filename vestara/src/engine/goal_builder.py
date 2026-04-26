@@ -8,17 +8,18 @@ from typing import Optional
 import numpy as np
 
 from vestara.data.cost_data import (
-    PROPERTY_PRICE_PER_SQM,
+    APARTMENT_PRICE_PER_SQM,
+    LANDED_HOUSE_TYPES,
+    LANDED_HOUSE_PREMIUM,
     SCHOOL_FEES_ANNUAL,
     LIVING_COST_MONTHLY,
     EDUCATION_ABROAD_ANNUAL,
     RETIREMENT_ANNUAL_EXPENSE,
     WEDDING_COST,
-    EMERGENCY_FUND_MULTIPLE,
+    EMERGENCY_FUND_OPTIONS,
     GOAL_TYPES,
 )
 
-# Buffers applied to raw base costs
 PROPERTY_BUFFER = 1.15   # 15% contingency: PPHTB + BPHTB + notary + price appreciation
 IDR_DEPRECIATION_RATE = 0.04  # IDR weakens ~4%/yr vs major currencies (2019–2024 avg)
 ABROAD_BUFFER = 1.10         # 10% buffer: application fees, living setup, exchange rate slippage
@@ -42,75 +43,167 @@ class GoalProfile:
         }
 
 
+def _is_landed_house(size_label: str) -> bool:
+    """Return True if the property type is a landed house (not pure apartment)."""
+    config = LANDED_HOUSE_TYPES.get(size_label, {})
+    return config.get("landedness", 1.0) < 1.0
+
+
 class GoalBuilder:
-    CITIES = list(PROPERTY_PRICE_PER_SQM.keys())
+    CITIES = list(APARTMENT_PRICE_PER_SQM.keys())
 
     # Property follow-up questions
     PROPERTY_QUESTIONS = [
-        {"id": "property_size", "question": "What unit size are you targeting?", "type": "select", "options": ["Studio / 1BR (24-36 sqm)", "2BR Standard (45-54 sqm)", "2BR Large / 3BR (70-90 sqm)", "Large / Penthouse (90-150 sqm)"], "key": "size_sqm_range"},
-        {"id": "property_location_detail", "question": "Which area/neighbourhood?", "type": "text", "placeholder": "e.g. Kemang, Senayan, Menteng"},
+        {
+            "id": "property_size",
+            "question": "What property type are you targeting?",
+            "type": "select",
+            "options": list(LANDED_HOUSE_TYPES.keys()),
+            "key": "size_label",
+        },
+        {
+            "id": "property_location_detail",
+            "question": "Which area / neighbourhood?",
+            "type": "text",
+            "placeholder": "e.g. Kemang, Senayan, Menteng",
+        },
     ]
 
     # Education follow-up questions
     EDUCATION_QUESTIONS = [
-        {"id": "education_level", "question": "Education level?", "type": "select", "options": ["TK / SD (Elementary)", "SMP (Junior High)", "SMA / SMK (Senior High)"], "key": "level"},
-        {"id": "school_tier", "question": "School type?", "type": "select", "options": ["Local Private (J煲0-15M/yr)", "Mid-tier Private (15-30M/yr)", "Premium Private (30-60M/yr)", "International School (60-150M/yr)"], "key": "tier"},
+        {
+            "id": "education_level",
+            "question": "Education level?",
+            "type": "select",
+            "options": ["TK / SD (Elementary)", "SMP (Junior High)", "SMA / SMK (Senior High)"],
+            "key": "level",
+        },
+        {
+            "id": "school_tier",
+            "question": "School type?",
+            "type": "select",
+            "options": [
+                "Local Private (Rp 0-15M/yr)",
+                "Mid-tier Private (Rp 15-30M/yr)",
+                "Premium Private (Rp 30-60M/yr)",
+                "International School (Rp 60-150M/yr)",
+            ],
+            "key": "tier",
+        },
     ]
 
     # Retirement follow-up questions
     RETIREMENT_QUESTIONS = [
-        {"id": "retirement_age", "question": "At what age do you want to retire?", "type": "number", "min": 45, "max": 75},
-        {"id": "lifestyle", "question": "Desired retirement lifestyle?", "type": "select", "options": ["Basic (2-3M/month)", "Comfortable (4-6M/month)", "Premium (7-10M/month)"], "key": "lifestyle"},
+        {
+            "id": "retirement_age",
+            "question": "At what age do you want to retire?",
+            "type": "number",
+            "min": 45,
+            "max": 75,
+        },
+        {
+            "id": "lifestyle",
+            "question": "Desired retirement lifestyle?",
+            "type": "select",
+            "options": [
+                "Basic (Rp 5-8M/month estimated spend)",
+                "Comfortable (Rp 8-15M/month)",
+                "Premium (Rp 15-30M/month)",
+                "Custom — enter my own monthly target",
+            ],
+            "key": "lifestyle",
+        },
     ]
 
     # Higher Education follow-up questions
     HIGHER_ED_QUESTIONS = [
         {"id": "degree_type", "question": "Degree type?", "type": "select", "options": ["Bachelor's Degree", "Master's Degree", "PhD / Doctorate"]},
-        {"id": "country", "question": "Country of study?", "type": "select", "options": ["Australia", "Europe", "Singapore", "US", "Other"], "key": "country"},
-        {"id": "institution_tier", "question": "Institution tier?", "type": "select", "options": ["Public / State University", "Private University", "Top 50 Global (e.g. NTU, NUS, Melbourne)", "Ivy League / Oxbridge / Top 10"], "key": "tier"},
+        {"id": "country", "question": "Country of study?", "type": "select", "options": ["Australia", "Europe", "Singapore", "US", "Other"]},
+        {"id": "institution_tier", "question": "Institution tier?", "type": "select", "options": [
+            "Public / State University",
+            "Private University",
+            "Top 50 Global (e.g. NTU, NUS, Melbourne)",
+            "Ivy League / Oxbridge / Top 10",
+        ]},
     ]
 
     # Wedding follow-up questions
     WEDDING_QUESTIONS = [
-        {"id": "wedding_scale", "question": "Wedding style?", "type": "select", "options": ["Simple / Intimate (50-100 guests)", "Moderate / Traditional (200-400 guests)", "Grand / Bilingual (500+ guests)"], "key": "scale"},
+        {"id": "wedding_scale", "question": "Wedding style?", "type": "select", "options": [
+            "Simple / Intimate (50-100 guests)",
+            "Moderate / Traditional (200-400 guests)",
+            "Grand / Bilingual (500+ guests)",
+        ]},
     ]
 
     # Emergency Fund follow-up questions
     EMERGENCY_FUND_QUESTIONS = [
-        {"id": "months_covered", "question": "How many months of expenses?", "type": "select", "options": ["3 months (minimum)", "6 months (standard)", "12 months (conservative)"], "key": "months"},
+        {"id": "months_covered", "question": "How many months of expenses?", "type": "select", "options": EMERGENCY_FUND_OPTIONS},
     ]
 
     def estimate_property_cost(self, city: str, size_label: str) -> float:
-        size_map = {
-            "Studio / 1BR (24-36 sqm)": 30,
-            "2BR Standard (45-54 sqm)": 50,
-            "2BR Large / 3BR (70-90 sqm)": 80,
-            "Large / Penthouse (90-150 sqm)": 120,
-        }
-        sqm = size_map.get(size_label, 54)
-        price_per_sqm = PROPERTY_PRICE_PER_SQM.get(city, PROPERTY_PRICE_PER_SQM["Jakarta Selatan"])
-        base_cost = sqm * price_per_sqm
+        """
+        Calculate property cost with apartment vs landed house differentiation.
+
+        Landed houses in Jakarta typically cost 20-40% more per sqm than apartments
+        (land ownership, larger floor plates, garden, parking). We apply a 30% premium.
+        """
+        config = LANDED_HOUSE_TYPES.get(size_label, {"building_sqm": 50, "landedness": 1.0})
+        building_sqm = config["building_sqm"]
+        landedness = config.get("landedness", 1.0)
+
+        if size_label == "Land Only (per sqm)":
+            # Land only: price per sqm of land = apartment price_per_sqm * land factor
+            price_per_sqm = APARTMENT_PRICE_PER_SQM.get(city, APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
+            # Land is sold per sqm; typical urban land parcel in Jakarta ~100-200 sqm
+            total_sqm = 150  # default parcel size
+            base_cost = total_sqm * price_per_sqm
+            return base_cost * PROPERTY_BUFFER
+
+        base_price_per_sqm = APARTMENT_PRICE_PER_SQM.get(city, APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
+
+        if landedness >= 1.0:
+            # Pure apartment: building_sqm * price_per_sqm
+            base_cost = building_sqm * base_price_per_sqm
+        else:
+            # Landed house: building_sqm * price * premium + land_sqm * price
+            # land_sqm = building_sqm / landedness - building_sqm
+            total_sqm = building_sqm / landedness
+            land_sqm = total_sqm - building_sqm
+            building_cost = building_sqm * base_price_per_sqm * LANDED_HOUSE_PREMIUM
+            land_cost = land_sqm * base_price_per_sqm
+            base_cost = building_cost + land_cost
+
         return base_cost * PROPERTY_BUFFER
 
     def estimate_education_cost(self, level: str, tier_label: str) -> float:
         tier_map = {
-            "Local Private (J煲0-15M/yr)": SCHOOL_FEES_ANNUAL["local_private_low"],
-            "Mid-tier Private (15-30M/yr)": SCHOOL_FEES_ANNUAL["local_private_mid"],
-            "Premium Private (30-60M/yr)": SCHOOL_FEES_ANNUAL["local_private_high"],
-            "International School (60-150M/yr)": SCHOOL_FEES_ANNUAL["international_mid"],
+            "Local Private (Rp 0-15M/yr)": SCHOOL_FEES_ANNUAL["local_private_low"],
+            "Mid-tier Private (Rp 15-30M/yr)": SCHOOL_FEES_ANNUAL["local_private_mid"],
+            "Premium Private (Rp 30-60M/yr)": SCHOOL_FEES_ANNUAL["local_private_high"],
+            "International School (Rp 60-150M/yr)": SCHOOL_FEES_ANNUAL["international_mid"],
         }
         annual = tier_map.get(tier_label, SCHOOL_FEES_ANNUAL["local_private_mid"])
         years_map = {"TK / SD (Elementary)": 6, "SMP (Junior High)": 3, "SMA / SMK (Senior High)": 3}
         years = years_map.get(level, 3)
         return annual * years
 
-    def estimate_retirement_cost(self, current_age: int, retirement_age: int, lifestyle: str) -> float:
-        monthly_map = {
-            "Basic (2-3M/month)": RETIREMENT_ANNUAL_EXPENSE["basic"],
-            "Comfortable (4-6M/month)": RETIREMENT_ANNUAL_EXPENSE["comfortable"],
-            "Premium (7-10M/month)": RETIREMENT_ANNUAL_EXPENSE["premium"],
-        }
-        annual = monthly_map.get(lifestyle, RETIREMENT_ANNUAL_EXPENSE["comfortable"])
+    def estimate_retirement_cost(
+        self,
+        current_age: int,
+        retirement_age: int,
+        lifestyle: str,
+        custom_monthly: Optional[float] = None,
+    ) -> float:
+        if "Custom" in lifestyle and custom_monthly is not None:
+            annual = custom_monthly * 12
+        else:
+            lifestyle_key = "basic"
+            if "Comfortable" in lifestyle:
+                lifestyle_key = "comfortable"
+            elif "Premium" in lifestyle:
+                lifestyle_key = "premium"
+            annual = RETIREMENT_ANNUAL_EXPENSE[lifestyle_key]
         years = max(retirement_age - current_age, 1)
         return annual * years
 
@@ -134,7 +227,6 @@ class GoalBuilder:
         years = degree_years.get(degree, 4)
         multiplier = tier_multiplier.get(tier, 1.0)
         base_cost = mid * years * multiplier
-        # Currency depreciation: IDR weakens ~4%/yr + 10% buffer for fees/setup slippage
         depreciated = base_cost * ((1 + IDR_DEPRECIATION_RATE) ** years) * ABROAD_BUFFER
         return depreciated
 
@@ -146,9 +238,21 @@ class GoalBuilder:
         }
         return scale_map.get(scale, WEDDING_COST["moderate"])
 
-    def estimate_emergency_fund_cost(self, city: str, months_label: str) -> float:
-        monthly_living = LIVING_COST_MONTHLY.get(city, 6_000_000)
-        months_map = {"3 months (minimum)": 3, "6 months (standard)": 6, "12 months (conservative)": 12}
+    def estimate_emergency_fund_cost(
+        self,
+        city: str,
+        months_label: str,
+        custom_monthly_expenses: Optional[float] = None,
+    ) -> float:
+        if "Custom" in months_label and custom_monthly_expenses is not None:
+            monthly_living = custom_monthly_expenses
+        else:
+            monthly_living = LIVING_COST_MONTHLY.get(city, 6_000_000)
+        months_map = {
+            "3 months (minimum)": 3,
+            "6 months (standard)": 6,
+            "12 months (conservative)": 12,
+        }
         months = months_map.get(months_label, 6)
         return monthly_living * months
 
@@ -160,22 +264,24 @@ class GoalBuilder:
         description = ""
 
         if goal_type == "Property":
-            size_label = answers.get("property_size", "2BR Standard (45-54 sqm)")
+            size_label = answers.get("property_size", list(LANDED_HOUSE_TYPES.keys())[0])
             cost = self.estimate_property_cost(city, size_label)
             description = f"{size_label} in {city}"
 
         elif goal_type == "Education":
             level = answers.get("education_level", "SMA / SMK (Senior High)")
-            tier = answers.get("school_tier", "Mid-tier Private (15-30M/yr)")
+            tier = answers.get("school_tier", "Mid-tier Private (Rp 15-30M/yr)")
             cost = self.estimate_education_cost(level, tier)
             description = f"{tier} {level} education"
 
         elif goal_type == "Retirement":
-            lifestyle = answers.get("retirement", "Comfortable (4-6M/month)")
+            lifestyle = answers.get("retirement", "Comfortable (Rp 8-15M/month)")
             current_age = answers.get("current_age", 25)
             retirement_age = answers.get("retirement_age", 55)
-            cost = self.estimate_retirement_cost(current_age, retirement_age, lifestyle)
-            description = f"{lifestyle} retirement from age {retirement_age}"
+            custom_monthly = answers.get("custom_retirement_monthly")
+            cost = self.estimate_retirement_cost(current_age, retirement_age, lifestyle, custom_monthly)
+            desc_lifestyle = lifestyle.replace("Custom — enter my own monthly target", "Custom lifestyle")
+            description = f"{desc_lifestyle} retirement from age {retirement_age}"
 
         elif goal_type == "Higher Education":
             country = answers.get("country", "Singapore")
@@ -191,8 +297,10 @@ class GoalBuilder:
 
         elif goal_type == "Emergency Fund":
             months_label = answers.get("months_covered", "6 months (standard)")
-            cost = self.estimate_emergency_fund_cost(city, months_label)
-            description = f"{months_label} emergency fund for {city}"
+            custom_monthly = answers.get("custom_emergency_monthly")
+            cost = self.estimate_emergency_fund_cost(city, months_label, custom_monthly)
+            desc_months = months_label.replace("Custom — enter my own monthly expenses", "Custom expenses")
+            description = f"{desc_months} emergency fund for {city}"
 
         elif goal_type == "Custom":
             custom_amount = answers.get("custom_amount")
@@ -214,9 +322,16 @@ class GoalBuilder:
 if __name__ == "__main__":
     gb = GoalBuilder()
 
-    print("=== Property Goal ===")
+    print("=== Property Goal (Apartment) ===")
     profile = gb.build_goal("Property", "Jakarta Selatan", {
-        "property_size": "2BR Standard (45-54 sqm)",
+        "property_size": "2BR Apartment (45-65 sqm)",
+        "timeline_years": 10,
+    })
+    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
+
+    print("\n=== Property Goal (Landed House) ===")
+    profile = gb.build_goal("Property", "Jakarta Selatan", {
+        "property_size": "Medium Landed House / Tipe 45-54 (45-54 sqm building)",
         "timeline_years": 10,
     })
     print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
@@ -224,7 +339,7 @@ if __name__ == "__main__":
     print("\n=== Education Goal ===")
     profile = gb.build_goal("Education", "Jakarta Selatan", {
         "education_level": "SMA / SMK (Senior High)",
-        "school_tier": "International School (60-150M/yr)",
+        "school_tier": "International School (Rp 60-150M/yr)",
         "timeline_years": 5,
     })
     print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
@@ -233,7 +348,7 @@ if __name__ == "__main__":
     profile = gb.build_goal("Retirement", "Bandung", {
         "current_age": 25,
         "retirement_age": 55,
-        "retirement": "Comfortable (4-6M/month)",
+        "retirement": "Comfortable (Rp 8-15M/month)",
         "timeline_years": 30,
     })
     print(f"  Cost: Rp {profile.estimated_cost:,.0f}")

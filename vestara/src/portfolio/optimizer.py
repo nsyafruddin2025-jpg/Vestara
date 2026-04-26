@@ -20,9 +20,9 @@ INSTRUMENT_LABELS = {
     "deposito": "Deposito",
     "obligasi_ori_sbr": "ORI / SBR (Government Bonds)",
     "reksa_dana_pasar_uang": "Reksa Dana Pasar Uang",
-    "reksa_dana_pendapatan_tetap": "Reksa Dana Pendapatan Tetap",
-    "reksa_dana_equity": "Reksa Dana Equity",
-    "reits": "REITs (DIRE)",
+    "reksa_dana_pendapatan_tetap": "Reksa Dana Campuran",
+    "reksa_dana_equity": "Reksa Dana Saham",
+    "reits": "DIRE / REITs",
 }
 
 # Annual return assumptions (conservative long-term estimates)
