@@ -15,6 +15,15 @@ from vestara.src.engine.risk_profiler import RiskProfiler, RISK_QUESTIONS
 from vestara.src.portfolio.optimizer import build_portfolio
 from vestara.data import cost_data as cd
 from vestara.data.cost_data import LIVING_COST_MONTHLY, INSTRUMENT_RISK_LABELS
+from vestara.data.fetcher import (
+    fetch_property_prices,
+    fetch_living_costs,
+    get_all_price_data,
+    get_city_property_price,
+    get_city_living_cost,
+    BASELINE_FALLBACK_PROPERTY,
+    BASELINE_FALLBACK_LIVING,
+)
 
 st.set_page_config(
     page_title="Vestara — Plan Your Life, Then Your Investment",
@@ -224,6 +233,48 @@ page = st.sidebar.radio("Go to", [
     "💼 Portfolio Recommendation",
     "📈 Dashboard",
 ])
+
+# ── Data Sources & Freshness ─────────────────────────────────────────────────
+st.sidebar.markdown("---")
+st.sidebar.markdown("**📡 Data Sources**")
+
+if "data_freshness" not in st.session_state:
+    st.session_state["data_freshness"] = None
+
+refresh_clicked = st.sidebar.button("🔄 Refresh Data")
+
+if refresh_clicked:
+    with st.spinner("Fetching latest prices..."):
+        prop_result, living_result = get_all_price_data(force_refresh=True)
+        st.session_state["data_freshness"] = {
+            "property": prop_result.freshness,
+            "living": living_result.freshness,
+        }
+    st.rerun()
+
+# Show current freshness status
+if st.session_state.get("data_freshness") is None:
+    prop_result, living_result = get_all_price_data()
+    st.session_state["data_freshness"] = {
+        "property": prop_result.freshness,
+        "living": living_result.freshness,
+    }
+
+pf = st.session_state["data_freshness"]["property"]
+lf = st.session_state["data_freshness"]["living"]
+
+def _freshness_badge(freshness) -> str:
+    if freshness.status == "live":
+        return f"🟢 Live · {freshness.last_updated}"
+    elif freshness.status == "cached":
+        return f"🟡 Cached · {freshness.last_updated} ({freshness.days_old}d ago)"
+    else:
+        return f"🔴 Baseline · {freshness.last_updated}"
+
+st.sidebar.caption(f"**Property:** {pf.source or 'unknown'}")
+st.sidebar.caption(_freshness_badge(pf))
+st.sidebar.caption(f"**Living costs:** {lf.source or 'unknown'}")
+st.sidebar.caption(_freshness_badge(lf))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -780,10 +831,24 @@ if page == "🏗️ Goal Builder":
                 price_per_sqm = cd.APARTMENT_PRICE_PER_SQM.get(city, 0)
                 inflation_rate = cd.PROPERTY_INFLATION_RATE
                 years = max(yr - current_year, 0)
+                # Fetch live data for this city
+                prop_result, _ = get_all_price_data()
+                JABODETABEK = {"Depok", "Bekasi", "Tangerang", "Tangerang Selatan", "Bogor"}
+                if city in JABODETABEK:
+                    pt = prop_result.jabo_prices.get(city)
+                else:
+                    pt = prop_result.prices.get(city)
+                price_source = pt.source if pt else "Baseline"
+                price_fresh = prop_result.freshness.display_text() if pt else f"Baseline estimate from cost_data.py"
+                if pt:
+                    price_per_sqm = pt.price_per_sqm
+                    price_source = f"{pt.source} ({pt.reliability})"
+                    price_fresh = prop_result.freshness.display_text()
                 st.markdown(f"**Type:** {ptype} &nbsp;&nbsp; **City:** {city}")
                 st.markdown(f"**Size:** {size} &nbsp;&nbsp; **Target year:** {yr}")
-                st.markdown(f"**Price/sqm today:** {format_idr(price_per_sqm)}")
+                st.markdown(f"**Price/sqm today:** {format_idr(price_per_sqm)} &nbsp;<span style='color:#7C3AED;font-size:0.8rem;'>({price_source})</span>")
                 st.markdown(f"**Inflation:** {inflation_rate * 100:.0f}%/yr &nbsp;&nbsp; **Years to purchase:** {years}")
+                st.caption(f"_{price_fresh}_")
                 st.markdown("")
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
@@ -1368,7 +1433,18 @@ elif page == "📊 Feasibility Analysis":
     st.markdown("---")
 
     if st.button("Analyse Feasibility", type="primary"):
-        monthly_living = LIVING_COST_MONTHLY.get(goal.get("city", ""), 6_000_000)
+        # Fetch live living cost data for the goal's city
+        _, living_result = get_all_price_data()
+        city = goal.get("city", "")
+        lc = living_result.costs.get(city)
+        if lc:
+            monthly_living = lc.monthly_cost
+            living_source = f"{lc.source} ({lc.reliability})"
+            living_fresh = living_result.freshness.display_text()
+        else:
+            monthly_living = LIVING_COST_MONTHLY.get(city, 6_000_000)
+            living_source = "Baseline"
+            living_fresh = "Baseline estimate from cost_data.py"
         monthly_required = goal["estimated_cost"] / (goal["timeline_years"] * 12)
         disposable = max(monthly_salary - monthly_living, 1)
         ratio = min(monthly_required / disposable, 2.0)
@@ -1385,6 +1461,8 @@ elif page == "📊 Feasibility Analysis":
             "ratio": ratio,
             "monthly_required": monthly_required,
             "monthly_living": monthly_living,
+            "monthly_living_source": living_source,
+            "monthly_living_fresh": living_fresh,
             "disposable": disposable,
             "investment_pct_of_salary": monthly_required / monthly_salary,
         }
@@ -1413,7 +1491,7 @@ elif page == "📊 Feasibility Analysis":
 
         mc1, mc2, mc3 = st.columns(3)
         with mc1:
-            st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(monthly_living)}</div><div class="metric-lbl">Monthly Living Cost</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(monthly_living)}</div><div class="metric-lbl">Monthly Living Cost</div><div style="font-size:0.7rem;color:#7C3AED;">{living_source}</div></div>""", unsafe_allow_html=True)
         with mc2:
             st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(disposable)}</div><div class="metric-lbl">Disposable Income</div></div>""", unsafe_allow_html=True)
         with mc3:

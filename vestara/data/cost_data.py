@@ -133,7 +133,17 @@ HIGHER_ED_FIELDS = list(HIGHER_ED_FIELD_MULTIPLIER.keys())
 # PROPERTY
 # ══════════════════════════════════════════════════════════════
 
-APARTMENT_PRICE_PER_SQM = {
+# ══════════════════════════════════════════════════════════════════════
+# ⚠️  BASELINE_FALLBACK DATA
+# All values below are FALLBACK estimates — used only when live data
+# sources (BI, BPS, Numbeo) are unavailable. The primary data source
+# is vestara/data/fetcher.py which pulls from live public APIs.
+# These values should never be shown as "current prices" — only as
+# "last verified fallback" when the fetcher has no cached data.
+# ══════════════════════════════════════════════════════════════════════
+
+BASELINE_FALLBACK_APARTMENT_PRICE_PER_SQM: dict[str, int] = {
+    # Core 10 cities
     "Jakarta Selatan": 42_000_000,
     "Jakarta Pusat": 38_000_000,
     "Jakarta Utara": 28_000_000,
@@ -144,7 +154,19 @@ APARTMENT_PRICE_PER_SQM = {
     "Bali (Denpasar)": 22_000_000,
     "Semarang": 8_500_000,
     "Makassar": 11_000_000,
+    # Jakarta missing districts (added from Numbeo directional data)
+    "Jakarta Timur": 25_000_000,
+    "Jakarta Barat": 30_000_000,
+    # Jabodetabek areas
+    "Depok": 18_000_000,
+    "Bekasi": 20_000_000,
+    "Tangerang": 22_000_000,
+    "Tangerang Selatan": 26_000_000,
+    "Bogor": 15_000_000,
 }
+
+# Legacy alias — DEPRECATED, use BASELINE_FALLBACK_APARTMENT_PRICE_PER_SQM
+APARTMENT_PRICE_PER_SQM = BASELINE_FALLBACK_APARTMENT_PRICE_PER_SQM
 
 # Landed houses command ~30% premium (land ownership, garden, parking)
 LANDED_HOUSE_PREMIUM = 1.30
@@ -257,11 +279,21 @@ WEDDING_COST = WEDDING_BASE_COST  # for backward compat in old code paths
 # LIVING COSTS & COMMON DATA
 # ══════════════════════════════════════════════════════════════
 
-LIVING_COST_MONTHLY = {
+# BASELINE_FALLBACK — same caveat as property prices above
+BASELINE_FALLBACK_LIVING_COST_MONTHLY: dict[str, int] = {
+    # Core 10 cities
     "Jakarta Selatan": 8_500_000, "Jakarta Pusat": 7_500_000, "Jakarta Utara": 6_000_000,
     "Bandung": 5_000_000, "Surabaya": 5_500_000, "Yogyakarta": 4_000_000,
     "Medan": 3_500_000, "Bali (Denpasar)": 6_500_000, "Semarang": 3_800_000, "Makassar": 4_200_000,
+    # Jakarta missing districts
+    "Jakarta Timur": 5_500_000, "Jakarta Barat": 6_500_000,
+    # Jabodetabek areas
+    "Depok": 4_500_000, "Bekasi": 4_800_000,
+    "Tangerang": 5_000_000, "Tangerang Selatan": 5_500_000, "Bogor": 4_200_000,
 }
+
+# Legacy alias — DEPRECATED, use BASELINE_FALLBACK_LIVING_COST_MONTHLY
+LIVING_COST_MONTHLY = BASELINE_FALLBACK_LIVING_COST_MONTHLY
 
 SALARY_DISTRIBUTION = {
     "fresh_graduate": (5_000_000, 8_000_000),
@@ -283,3 +315,15 @@ GOAL_TYPES = ["Property", "Education", "Retirement", "Emergency Fund", "Wedding"
 
 def get_current_year() -> int:
     return datetime.datetime.now().year
+
+INSTRUMENT_RISK_LABELS = {
+    "Reksa Dana Saham": "High Risk — value may drop significantly",
+    "Reksa Dana Campuran": "Medium Risk — moderate fluctuation",
+    "Reksa Dana Pasar Uang": "Low Risk — stable, liquid",
+    "ORI": "Low Risk — government guaranteed, fixed return",
+    "SBR": "Low Risk — government guaranteed, fixed return",
+    "ORI/SBR": "Low Risk — government guaranteed, fixed return",
+    "Deposito": "Very Low Risk — LPS guaranteed up to Rp 2B",
+    "DIRE": "Medium-High Risk — affected by property market",
+    "DIRE/REITs": "Medium-High Risk — affected by property market",
+}
