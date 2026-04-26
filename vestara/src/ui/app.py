@@ -12,6 +12,7 @@ import os
 
 from vestara.src.engine.goal_builder import GoalBuilder, STEPS_BY_GOAL
 from vestara.src.engine.risk_profiler import RiskProfiler, RISK_QUESTIONS
+from vestara.src.engine.peer_clusterer import get_clusterer
 from vestara.src.portfolio.optimizer import build_portfolio
 from vestara.data import cost_data as cd
 from vestara.data.cost_data import LIVING_COST_MONTHLY, INSTRUMENT_RISK_LABELS
@@ -1540,6 +1541,59 @@ elif page == "📊 Feasibility Analysis":
                         st.write(s.change_description)
                         st.write(f"New investment ratio: **{s.new_ratio:.1%}**")
                         st.markdown(f"Verdict: <span class='verdict-pill {pill_cls}'>{s.verdict.upper()}</span>", unsafe_allow_html=True)
+
+            # ── Peer Benchmarking ──────────────────────────────────────
+            st.markdown("---")
+            st.markdown("#### Peer Benchmarking")
+            st.caption("Based on 2,000 synthetic Vestara users with similar financial profiles")
+
+            clusterer = get_clusterer()
+            city_living_cost_index = int(monthly_living / 1_000_000)
+            cluster_result = clusterer.predict(
+                monthly_salary=monthly_salary,
+                city_living_cost_index=city_living_cost_index,
+                goal_cost=goal["estimated_cost"],
+                timeline_years=goal["timeline_years"],
+                income_growth_rate=income_growth,
+                monthly_living_cost=monthly_living,
+                disposable_income=disposable,
+            )
+
+            border_style = f"border:2px solid {cluster_result.color};box-shadow:0 0 20px({cluster_result.color}33);"
+            st.markdown(f"""
+            <div class="vestara-card" style="{border_style}">
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                    <div style="font-size:2.5rem;">{cluster_result.icon}</div>
+                    <div>
+                        <div style="font-size:1.1rem;font-weight:700;color:#F8FAFC;">{cluster_result.archetype}</div>
+                        <div style="font-size:0.8rem;color:#94A3B8;">{cluster_result.peer_count:,} synthetic peers in this cluster</div>
+                    </div>
+                </div>
+                <div style="font-size:0.9rem;color:#94A3B8;line-height:1.6;">{cluster_result.description}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # User vs peers comparison
+            uvp = cluster_result.user_vs_peers
+            st.markdown("**How you compare to your peers:**")
+            comparison_cols = st.columns(4)
+            comparisons = [
+                ("Salary", uvp["salary_vs_peers_pct"], "vs median peer salary"),
+                ("Disposable Income", uvp["disposable_vs_peers_pct"], "vs median peer disposable"),
+                ("Goal Size", uvp["goal_vs_peers_pct"], "vs median peer goal"),
+                ("Timeline", uvp["timeline_vs_peers_pct"], "vs median peer timeline"),
+            ]
+            for col, (label, pct, caption) in zip(comparison_cols, comparisons):
+                with col:
+                    cls_color = "#10B981" if pct > 0 else ("#EF4444" if pct < -10 else "#F59E0B")
+                    arrow = "&#9650;" if pct > 0 else ("&#9660;" if pct < 0 else "&#8226;")
+                    st.markdown(f"""
+                    <div class="metric-col">
+                        <div class="metric-val" style="font-size:1.1rem;color:{cls_color};">{arrow} {abs(pct):.1f}%</div>
+                        <div class="metric-lbl">{label}</div>
+                        <div style="font-size:0.7rem;color:#94A3B8;">{caption}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
