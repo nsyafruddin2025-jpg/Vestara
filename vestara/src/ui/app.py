@@ -12,7 +12,7 @@ import os
 
 from vestara.src.engine.goal_builder import GoalBuilder, STEPS_BY_GOAL
 from vestara.src.engine.risk_profiler import RiskProfiler, RISK_QUESTIONS
-from vestara.src.engine.peer_clusterer import get_clusterer
+from vestara.src.engine.peer_clustering import get_clusterer
 from vestara.src.portfolio.optimizer import build_portfolio
 from vestara.data import cost_data as cd
 from vestara.data.cost_data import LIVING_COST_MONTHLY, INSTRUMENT_RISK_LABELS
@@ -1528,6 +1528,7 @@ elif page == "📊 Feasibility Analysis":
                 current_timeline=goal["timeline_years"],
                 current_contribution=monthly_required,
                 goal_type=goal["goal_type"],
+                current_city=goal.get("city", "Jakarta Selatan"),
             )
 
             if scenarios.blocked_reason:

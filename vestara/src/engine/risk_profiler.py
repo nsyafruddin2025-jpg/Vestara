@@ -211,7 +211,7 @@ ALLOCATION_RANGES = {
 PROFILE_DESCRIPTIONS = {
     "Konservatif": "You prefer stability and capital preservation. Your portfolio prioritises low-risk, liquid instruments like deposito and government bonds (ORI/SBR). Growth potential is modest but your money is well-protected.",
     "Moderat": "You balance growth and safety. You invest primarily in bonds and mixed Reksa Dana, with a meaningful equity and REIT component for long-term growth. You can tolerate some volatility.",
-    "Agresif": "You prioritise long-term growth and can withstand significant market swings. Your portfolio is heavily weighted toward equity Reksa Dana and REITs. Short-term losses don't动摇 your conviction.",
+    "Agresif": "You prioritise long-term growth and can withstand significant market swings. Your portfolio is heavily weighted toward equity Reksa Dana and REITs. Short-term losses do not shake your conviction.",
 }
 
 

@@ -234,6 +234,7 @@ def run_scenario_analysis(
     current_timeline: int,
     current_contribution: float,
     goal_type: str = "Custom",
+    current_city: str = "Jakarta Selatan",
 ) -> ScenarioResult:
     """
     Run full scenario analysis across all four levers.
@@ -293,7 +294,7 @@ def run_scenario_analysis(
 
     # Priority 2: location
     l_scenario = optimize_location(
-        goal_cost, monthly_salary, "", current_timeline, green_threshold,
+        goal_cost, monthly_salary, current_city, current_timeline, green_threshold,
     )
     if l_scenario:
         scenarios.append(l_scenario)

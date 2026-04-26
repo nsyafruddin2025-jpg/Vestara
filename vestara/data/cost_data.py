@@ -47,27 +47,39 @@ SCHOOL_FEES_ANNUAL = {
     # ── Government schools (negligible tuition, some levies) ──
     "Government": {
         "Jakarta Selatan": 3_000_000, "Jakarta Pusat": 3_000_000, "Jakarta Utara": 2_500_000,
+        "Jakarta Timur": 2_500_000, "Jakarta Barat": 2_800_000,
         "Bandung": 2_000_000, "Surabaya": 2_500_000, "Yogyakarta": 1_800_000,
         "Medan": 1_500_000, "Bali (Denpasar)": 2_000_000, "Semarang": 1_800_000, "Makassar": 2_000_000,
+        "Depok": 2_200_000, "Bekasi": 2_300_000,
+        "Tangerang": 2_400_000, "Tangerang Selatan": 2_500_000, "Bogor": 2_000_000,
     },
     # ── Local Private schools ──
     "Local Private": {
         "Jakarta Selatan": 12_000_000, "Jakarta Pusat": 10_000_000, "Jakarta Utara": 8_000_000,
+        "Jakarta Timur": 7_500_000, "Jakarta Barat": 9_000_000,
         "Bandung": 8_000_000, "Surabaya": 9_000_000, "Yogyakarta": 7_000_000,
         "Medan": 6_000_000, "Bali (Denpasar)": 8_000_000, "Semarang": 6_500_000, "Makassar": 7_000_000,
+        "Depok": 7_500_000, "Bekasi": 8_000_000,
+        "Tangerang": 9_000_000, "Tangerang Selatan": 10_000_000, "Bogor": 7_000_000,
     },
     # ── National Plus schools ──
     "National Plus": {
         "Jakarta Selatan": 30_000_000, "Jakarta Pusat": 28_000_000, "Jakarta Utara": 25_000_000,
+        "Jakarta Timur": 24_000_000, "Jakarta Barat": 27_000_000,
         "Bandung": 25_000_000, "Surabaya": 26_000_000, "Yogyakarta": 22_000_000,
         "Medan": 20_000_000, "Bali (Denpasar)": 25_000_000, "Semarang": 20_000_000, "Makassar": 22_000_000,
+        "Depok": 24_000_000, "Bekasi": 25_000_000,
+        "Tangerang": 26_000_000, "Tangerang Selatan": 28_000_000, "Bogor": 22_000_000,
     },
     # ── International schools (annual tuition, USD-denominated converted) ──
     # Using Rp 16,000/USD approximation; international schools charge USD
     "International": {
         "Jakarta Selatan": 180_000_000, "Jakarta Pusat": 170_000_000, "Jakarta Utara": 150_000_000,
+        "Jakarta Timur": 145_000_000, "Jakarta Barat": 165_000_000,
         "Bandung": 150_000_000, "Surabaya": 160_000_000, "Yogyakarta": 140_000_000,
         "Medan": 130_000_000, "Bali (Denpasar)": 160_000_000, "Semarang": 130_000_000, "Makassar": 140_000_000,
+        "Depok": 145_000_000, "Bekasi": 150_000_000,
+        "Tangerang": 155_000_000, "Tangerang Selatan": 165_000_000, "Bogor": 140_000_000,
     },
 }
 
@@ -239,8 +251,12 @@ EMERGENCY_FUND_MULTIPLE = 6
 WEDDING_BASE_COST = {
     # (city: base_cost) — mid-range estimates
     "Jakarta Selatan": 150_000_000, "Jakarta Pusat": 140_000_000, "Jakarta Utara": 120_000_000,
+    "Jakarta Timur": 115_000_000, "Jakarta Barat": 135_000_000,
     "Bandung": 100_000_000, "Surabaya": 110_000_000, "Yogyakarta": 80_000_000,
     "Medan": 70_000_000, "Bali (Denpasar)": 130_000_000, "Semarang": 70_000_000, "Makassar": 90_000_000,
+    # Jabodetabek
+    "Depok": 95_000_000, "Bekasi": 100_000_000,
+    "Tangerang": 115_000_000, "Tangerang Selatan": 125_000_000, "Bogor": 85_000_000,
 }
 
 WEDDING_SCALE_MULTIPLIER = {

@@ -130,7 +130,6 @@ def project_growth(
         values.append((year, current))
         for month in range(12):
             current = current * (1 + monthly_rate) + monthly_contribution
-    values.append((years, current))
     return values
 
 

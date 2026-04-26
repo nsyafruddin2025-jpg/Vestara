@@ -106,7 +106,7 @@ def generate_synthetic_dataset(n_samples: int = 5000) -> pd.DataFrame:
         goal_cost = generate_goal_cost(goal_type, city)
         timeline_years = np.random.randint(3, 31)
 
-        living_cost_index = list(LIVING_COST_MONTHLY.keys()).index(city) + 1
+        living_cost_index = round(monthly_living_cost / 1_000_000, 1)
 
         future_goal_cost = project_goal_cost_at_year(goal_cost, 0, timeline_years, goal_type)
 
@@ -167,7 +167,7 @@ def generate_regression_dataset(n_samples: int = 5000) -> pd.DataFrame:
         goal_type = np.random.choice(GOAL_TYPES)
         goal_cost = generate_goal_cost(goal_type, city)
         timeline_years = np.random.randint(3, 31)
-        living_cost_index = list(LIVING_COST_MONTHLY.keys()).index(city) + 1
+        living_cost_index = round(monthly_living_cost / 1_000_000, 1)
         disposable = compute_disposable_income(monthly_salary, monthly_living_cost)
 
         # Regression target: months needed to reach goal if investing 25% of disposable
