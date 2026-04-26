@@ -1,0 +1,15 @@
+# Vestara — Pinned Dependencies
+# Auto-generated: update versions deliberately, then pin
+
+# UI Framework
+streamlit==1.44.1
+
+# Data handling
+pandas==2.2.3
+numpy==2.2.3
+
+# HTTP client (used by Streamlit for WebSocket fallback)
+urllib3==2.4.0
+
+# Rich text rendering (optional, for CLI helpers)
+rich==13.9.4

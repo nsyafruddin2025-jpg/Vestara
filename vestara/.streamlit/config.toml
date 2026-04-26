@@ -1,0 +1,33 @@
+[server]
+# Run headless (no browser popup on start)
+headless = true
+
+# Reload when Python files change (good for development)
+runOnSave = true
+
+# Disable cross-origin requests for security
+enableCORS = false
+
+# Enable XSRF protection (blocks unauthorized state-changing requests)
+enableXsrfProtection = true
+
+# Max upload size in MB
+maxUploadSize = 200
+
+[browser]
+# Disable Streamlit usage statistics collection
+gatherUsageStats = false
+
+# Don't open browser automatically
+serverAddress = "0.0.0.0"
+
+[theme]
+# Dark theme matching vestara's custom CSS (#0A0A0F background)
+# Streamlit theme is supplemental — custom CSS takes precedence
+base = "dark"
+
+[client]
+showErrorDetails = true
+
+[runner]
+magicEnabled = true

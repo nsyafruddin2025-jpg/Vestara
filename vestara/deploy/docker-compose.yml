@@ -1,0 +1,39 @@
+# ============================================================
+# Vestara — docker-compose for local testing
+# ============================================================
+# Usage:
+#   docker compose up          # foreground (see logs)
+#   docker compose up -d       # background
+#   docker compose down        # stop and remove
+#   docker compose up --build  # rebuild after changes
+# ============================================================
+
+services:
+  vestara:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: vestara-app
+    ports:
+      # Host : Container
+      - "8501:8501"
+    # Environment variables (override in .env or here)
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_RUN_ON_SAVE=true
+      - STREAMLIT_SERVER_ENABLE_CORS=false
+      - STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION=true
+    # Volume mount for live reload during development
+    # Comment out volumes block for production-like isolated run
+    volumes:
+      - ../src:/app/src:ro
+      - ../data:/app/data:ro
+      - ../models:/app/models:ro
+      - ../.streamlit:/app/.streamlit:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
