@@ -1,29 +1,105 @@
 """
-Goal Builder — guides user through goal selection and cost estimation.
-Supports 7 goal types with smart follow-up questions.
+Goal Builder — intelligent multi-step goal cost estimation.
+Cost is always the OUTPUT after all criteria are collected.
+All costs are projected to the target year using appropriate inflation rates.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
-import numpy as np
+from vestara.data import cost_data as cd
 
-from vestara.data.cost_data import (
-    APARTMENT_PRICE_PER_SQM,
-    LANDED_HOUSE_TYPES,
-    LANDED_HOUSE_PREMIUM,
-    SCHOOL_FEES_ANNUAL,
-    LIVING_COST_MONTHLY,
-    EDUCATION_ABROAD_ANNUAL,
-    RETIREMENT_ANNUAL_EXPENSE,
-    WEDDING_COST,
-    EMERGENCY_FUND_OPTIONS,
-    GOAL_TYPES,
-)
 
-PROPERTY_BUFFER = 1.15   # 15% contingency: PPHTB + BPHTB + notary + price appreciation
-IDR_DEPRECIATION_RATE = 0.04  # IDR weakens ~4%/yr vs major currencies (2019–2024 avg)
-ABROAD_BUFFER = 1.10         # 10% buffer: application fees, living setup, exchange rate slippage
+# ══════════════════════════════════════════════════════════════
+# STEP DEFINITIONS
+# Each goal type has a fixed sequence of steps.
+# The step index (0-based) drives the UI.
+# ══════════════════════════════════════════════════════════════
 
+PROPERTY_STEPS = [
+    {"id": "property_type",    "label": "Property type",       "total": 5},
+    {"id": "city",             "label": "City",               "total": 5},
+    {"id": "area",             "label": "Area / Neighbourhood","total": 5},
+    {"id": "size",             "label": "Size",              "total": 5},
+    {"id": "target_year",      "label": "Target year",       "total": 5},
+]
+
+EDUCATION_STEPS = [
+    {"id": "education_level",  "label": "Child's education level", "total": 5},
+    {"id": "school_type",      "label": "School type",            "total": 5},
+    {"id": "child_age",        "label": "Child's current age",    "total": 5},
+    {"id": "city",             "label": "City",                   "total": 5},
+]
+
+RETIREMENT_STEPS = [
+    {"id": "current_age",       "label": "Current age",        "total": 5},
+    {"id": "retirement_age",   "label": "Retirement age",      "total": 5},
+    {"id": "city",             "label": "City",               "total": 5},
+    {"id": "lifestyle",        "label": "Lifestyle",           "total": 5},
+    {"id": "life_expectancy",  "label": "Life expectancy",    "total": 5},
+]
+
+HIGHER_ED_STEPS = [
+    {"id": "degree_level",    "label": "Degree level",         "total": 5},
+    {"id": "location",        "label": "Study location",        "total": 5},
+    {"id": "country",         "label": "Country",              "total": 5},
+    {"id": "field",           "label": "Field of study",       "total": 5},
+    {"id": "years_until",     "label": "Years until enrollment","total": 5},
+]
+
+WEDDING_STEPS = [
+    {"id": "scale",           "label": "Wedding scale",        "total": 5},
+    {"id": "city",            "label": "City",                "total": 5},
+    {"id": "target_year",     "label": "Target year",         "total": 5},
+    {"id": "venue",           "label": "Venue preference",    "total": 5},
+    {"id": "entertainment",   "label": "Entertainment",        "total": 5},
+]
+
+EMERGENCY_FUND_STEPS = [
+    {"id": "monthly_salary",  "label": "Monthly take-home salary", "total": 3},
+    {"id": "monthly_expenses","label": "Monthly fixed expenses",     "total": 3},
+    {"id": "coverage",         "label": "Coverage duration",          "total": 3},
+]
+
+CUSTOM_STEPS = [
+    {"id": "goal_name",       "label": "Goal name",           "total": 3},
+    {"id": "amount_mode",     "label": "Amount type",         "total": 3},
+    {"id": "target_year",     "label": "Target year",         "total": 3},
+]
+
+STEPS_BY_GOAL = {
+    "Property":        PROPERTY_STEPS,
+    "Education":       EDUCATION_STEPS,
+    "Retirement":      RETIREMENT_STEPS,
+    "Higher Education": HIGHER_ED_STEPS,
+    "Wedding":         WEDDING_STEPS,
+    "Emergency Fund":   EMERGENCY_FUND_STEPS,
+    "Custom":          CUSTOM_STEPS,
+}
+
+
+# ══════════════════════════════════════════════════════════════
+# COST BREAKDOWN
+# ══════════════════════════════════════════════════════════════
+
+@dataclass
+class CostBreakdownItem:
+    label: str
+    value: float
+    detail: str = ""
+
+
+@dataclass
+class CostBreakdown:
+    current_cost: float
+    projected_cost: float
+    years_to_goal: int
+    inflation_rate: float
+    items: list[CostBreakdownItem] = field(default_factory=list)
+
+
+# ══════════════════════════════════════════════════════════════
+# GOAL PROFILE
+# ══════════════════════════════════════════════════════════════
 
 @dataclass
 class GoalProfile:
@@ -32,6 +108,7 @@ class GoalProfile:
     estimated_cost: float
     timeline_years: int
     description: str
+    breakdown: Optional[CostBreakdown] = None
 
     def to_dict(self) -> dict:
         return {
@@ -43,335 +120,679 @@ class GoalProfile:
         }
 
 
-def _is_landed_house(size_label: str) -> bool:
-    """Return True if the property type is a landed house (not pure apartment)."""
-    config = LANDED_HOUSE_TYPES.get(size_label, {})
-    return config.get("landedness", 1.0) < 1.0
+# ══════════════════════════════════════════════════════════════
+# CALCULATOR HELPERS
+# ══════════════════════════════════════════════════════════════
 
+def _project(value: float, rate: float, years: int) -> float:
+    """Apply annual compounding to project a value to future."""
+    return value * ((1 + rate) ** years)
+
+
+def _format_year(year: int) -> str:
+    return str(year)
+
+
+# ══════════════════════════════════════════════════════════════
+# EDUCATION (CHILD'S SCHOOL)
+# ══════════════════════════════════════════════════════════════
+
+def calculate_education(
+    education_level: str,
+    school_type: str,
+    child_age: int,
+    city: str,
+) -> tuple[float, CostBreakdown]:
+    """
+    Project total education cost from now to child's school entry year,
+    then for the full duration of that school level.
+    """
+    entry_age = cd.EDUCATION_ENTRY_AGE.get(education_level, 6)
+    duration = cd.EDUCATION_DURATION.get(education_level, 6)
+    years_until_entry = max(entry_age - child_age, 0)
+    entry_year = cd.get_current_year() + years_until_entry
+
+    # Current annual fee
+    fee_table = cd.SCHOOL_FEES_ANNUAL.get(school_type, cd.SCHOOL_FEES_ANNUAL["Local Private"])
+    current_annual_fee = fee_table.get(city, fee_table["Jakarta Selatan"])
+
+    inflation_rate = cd.EDUCATION_INFLATION_RATE.get(school_type, 0.08)
+
+    # Project annual fee at entry year
+    projected_annual_fee = _project(current_annual_fee, inflation_rate, years_until_entry)
+
+    # Total over full duration
+    projected_total = projected_annual_fee * duration
+    current_total = current_annual_fee * duration
+
+    items = [
+        CostBreakdownItem(
+            "Current annual fee",
+            current_annual_fee,
+            f"{school_type} school in {city}",
+        ),
+        CostBreakdownItem(
+            f"Years until entry",
+            years_until_entry,
+            f"Entry at age {entry_age} (year {entry_year})",
+        ),
+        CostBreakdownItem(
+            "Annual inflation rate",
+            inflation_rate * 100,
+            f"{inflation_rate * 100:.0f}% per year ({school_type})",
+        ),
+        CostBreakdownItem(
+            "Projected annual fee at entry",
+            projected_annual_fee,
+            f"Year {entry_year}",
+        ),
+        CostBreakdownItem(
+            "Duration of this level",
+            duration,
+            f"{education_level}: {duration} years",
+        ),
+        CostBreakdownItem(
+            "Total projected cost",
+            projected_total,
+            f"{current_total:,.0f} today → {projected_total:,.0f} in {years_until_entry} years",
+        ),
+    ]
+
+    return projected_total, CostBreakdown(
+        current_cost=current_total,
+        projected_cost=projected_total,
+        years_to_goal=years_until_entry,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# HIGHER EDUCATION
+# ══════════════════════════════════════════════════════════════
+
+def calculate_higher_education(
+    degree_level: str,
+    study_location: str,   # "In Indonesia" or "Abroad"
+    country: str,
+    field: str,
+    years_until_enrollment: int,
+) -> tuple[float, CostBreakdown]:
+    """
+    Project total higher education cost (tuition + living) to enrollment year.
+    Abroad costs include IDR depreciation and currency risk buffer.
+    """
+    duration = cd.HIGHER_ED_DEGREE_DURATION.get(degree_level, 4)
+    enrollment_year = cd.get_current_year() + years_until_enrollment
+    field_mult = cd.HIGHER_ED_FIELD_MULTIPLIER.get(field, 1.0)
+    inflation_rate = cd.HIGHER_ED_TUITION_INFLATION
+
+    items = [
+        CostBreakdownItem("Degree level", duration, f"{degree_level}: {duration} years"),
+        CostBreakdownItem("Years until enrollment", years_until_enrollment, f"Starting {enrollment_year}"),
+        CostBreakdownItem("Field of study", field_mult, f"{field} (×{field_mult:.1f} multiplier)"),
+    ]
+
+    if study_location == "In Indonesia":
+        # Indonesia: public or private university
+        pub_lo, pub_hi = cd.HIGHER_ED_BASE_ANNUAL_TUITION["Indonesia"]["public"]
+        priv_lo, priv_hi = cd.HIGHER_ED_BASE_ANNUAL_TUITION["Indonesia"]["private"]
+        # Use private mid-range
+        annual_tuition_current = (priv_lo + priv_hi) / 2 * field_mult
+        annual_living = cd.HIGHER_ED_ANNUAL_LIVING["Indonesia"]
+        country_label = "Indonesia (Private University)"
+    else:
+        country_key = country if country in cd.HIGHER_ED_ANNUAL_LIVING else "Other"
+        lo, hi = cd.HIGHER_ED_BASE_ANNUAL_TUITION.get(country, cd.HIGHER_ED_BASE_ANNUAL_TUITION["Other"])
+        annual_tuition_current = (lo + hi) / 2 * field_mult
+        annual_living = cd.HIGHER_ED_ANNUAL_LIVING.get(country_key, cd.HIGHER_ED_ANNUAL_LIVING["Other"])
+        country_label = country
+
+    # Project tuition to enrollment year
+    projected_tuition = _project(annual_tuition_current, inflation_rate, years_until_enrollment)
+
+    # Living cost inflation (domestic: lower; abroad: higher)
+    living_inflation = inflation_rate if study_location == "In Indonesia" else inflation_rate + 0.02
+    projected_living = _project(annual_living, living_inflation, years_until_enrollment)
+
+    # Abroad: IDR depreciation + currency risk
+    abroad_adjustment = 1.0
+    if study_location == "Abroad":
+        idr_depreciation = _project(1.0, cd.IDR_DEPRECIATION_RATE, years_until_enrollment)
+        abroad_adjustment = idr_depreciation * (1 + cd.CURRENCY_RISK_BUFFER)
+        items.append(CostBreakdownItem(
+            "IDR depreciation",
+            (idr_depreciation - 1) * 100,
+            f"×{idr_depreciation:.2f} over {years_until_enrollment} years",
+        ))
+        items.append(CostBreakdownItem(
+            "Currency risk buffer",
+            cd.CURRENCY_RISK_BUFFER * 100,
+            f"+{cd.CURRENCY_RISK_BUFFER * 100:.0f}% for forex volatility",
+        ))
+
+    # Totals
+    current_annual = annual_tuition_current + annual_living
+    projected_annual = (projected_tuition + projected_living) * abroad_adjustment
+    projected_total = projected_annual * duration
+    current_total = current_annual * duration
+
+    items.extend([
+        CostBreakdownItem(
+            "Current annual tuition",
+            annual_tuition_current,
+            f"{country_label} — {field}",
+        ),
+        CostBreakdownItem(
+            "Current annual living costs",
+            annual_living,
+            f"{study_location}",
+        ),
+        CostBreakdownItem(
+            f"Projected costs at enrollment ({enrollment_year})",
+            projected_annual,
+            f"Tuition × {projected_tuition/annual_tuition_current:.1f} + living × {projected_living/annual_living:.1f}" +
+            (f" + IDR depreciation" if study_location == "Abroad" else ""),
+        ),
+        CostBreakdownItem(
+            "Total projected cost",
+            projected_total,
+            f"{duration} years × Rp {projected_annual:,.0f}/yr",
+        ),
+    ])
+
+    return projected_total, CostBreakdown(
+        current_cost=current_total,
+        projected_cost=projected_total,
+        years_to_goal=years_until_enrollment,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# PROPERTY
+# ══════════════════════════════════════════════════════════════
+
+def calculate_property(
+    property_type: str,
+    city: str,
+    area: str,
+    size_label: str,
+    target_year: int,
+    custom_building_sqm: Optional[float] = None,
+    custom_total_sqm: Optional[float] = None,
+) -> tuple[float, CostBreakdown]:
+    """
+    Project property cost to target year with property inflation + transaction buffer.
+    """
+    current_year = cd.get_current_year()
+    years_to_purchase = max(target_year - current_year, 0)
+    inflation_rate = cd.PROPERTY_INFLATION_RATE
+
+    price_per_sqm = cd.APARTMENT_PRICE_PER_SQM.get(city, cd.APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
+
+    if property_type == "Apartment":
+        building_sqm = cd.APARTMENT_SIZES.get(size_label, 55)
+        total_sqm = building_sqm  # no land component
+        landedness = 1.0
+    elif property_type == "Landed House":
+        if size_label == "Custom" and custom_building_sqm and custom_total_sqm:
+            building_sqm = custom_building_sqm
+            total_sqm = custom_total_sqm
+        else:
+            config = cd.LANDED_HOUSE_SIZES.get(size_label, cd.LANDED_HOUSE_SIZES["Tipe 45"])
+            building_sqm = config["building_sqm"]
+            total_sqm = config["total_sqm"]
+        landedness = building_sqm / total_sqm if total_sqm else 1.0
+    elif property_type == "Land Only":
+        sqm = custom_total_sqm or 150
+        building_sqm = 0
+        total_sqm = sqm
+        landedness = 0.0
+    else:  # Shophouse
+        building_sqm = custom_building_sqm or 80
+        total_sqm = custom_total_sqm or 100
+        landedness = building_sqm / total_sqm if total_sqm else 1.0
+
+    # Current base cost
+    if landedness >= 1.0:
+        # Pure building (apartment / land only)
+        base_cost = building_sqm * price_per_sqm
+    else:
+        # Landed house: building_sqm * price * premium + land_sqm * price
+        land_sqm = total_sqm - building_sqm
+        building_cost = building_sqm * price_per_sqm * cd.LANDED_HOUSE_PREMIUM
+        land_cost = land_sqm * price_per_sqm
+        base_cost = building_cost + land_cost
+
+    # Project to target year
+    projected_base = _project(base_cost, inflation_rate, years_to_purchase)
+    transaction_cost = projected_base * (cd.PROPERTY_BUFFER - 1)
+    projected_total = projected_base + transaction_cost
+
+    items = [
+        CostBreakdownItem(
+            "Current price per sqm",
+            price_per_sqm,
+            f"{city}",
+        ),
+        CostBreakdownItem(
+            "Property type",
+            0,
+            f"{property_type}, {size_label}" +
+            (f" ({building_sqm:.0f} sqm building + {total_sqm - building_sqm:.0f} sqm land)"
+             if landedness < 1.0 else f" ({building_sqm:.0f} sqm)"),
+        ),
+        CostBreakdownItem(
+            "Current estimated price",
+            base_cost,
+            "Today's price (excludes transaction costs)",
+        ),
+        CostBreakdownItem(
+            "Annual property inflation",
+            inflation_rate * 100,
+            f"{inflation_rate * 100:.0f}% per year",
+        ),
+        CostBreakdownItem(
+            "Years to purchase",
+            years_to_purchase,
+            f"Target: {target_year}",
+        ),
+        CostBreakdownItem(
+            "Projected price at target year",
+            projected_base,
+            f"{base_cost:,.0f} × {(1 + inflation_rate) ** years_to_purchase:.2f}",
+        ),
+        CostBreakdownItem(
+            "Transaction costs",
+            transaction_cost,
+            f"+{(cd.PROPERTY_BUFFER - 1) * 100:.0f}% (PPHTB, notary, agent)",
+        ),
+        CostBreakdownItem(
+            "Total projected cost",
+            projected_total,
+            f"Includes purchase price + transaction buffer",
+        ),
+    ]
+
+    return projected_total, CostBreakdown(
+        current_cost=base_cost,
+        projected_cost=projected_total,
+        years_to_goal=years_to_purchase,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# RETIREMENT
+# ══════════════════════════════════════════════════════════════
+
+def calculate_retirement(
+    current_age: int,
+    retirement_age: int,
+    city: str,
+    lifestyle: str,
+    life_expectancy: int,
+    custom_monthly: Optional[float] = None,
+) -> tuple[float, CostBreakdown]:
+    """
+    Project total retirement fund needed: monthly spend × 12 × years in retirement,
+    all inflated to retirement year.
+    """
+    years_to_retirement = max(retirement_age - current_age, 0)
+    years_in_retirement = max(life_expectancy - retirement_age, 0)
+
+    if "Custom" in lifestyle and custom_monthly is not None:
+        monthly_current = custom_monthly
+    elif "Basic" in lifestyle:
+        monthly_current = 6_500_000  # midpoint Rp 5-8M
+    elif "Premium" in lifestyle:
+        monthly_current = 22_500_000  # midpoint Rp 15-30M
+    else:
+        monthly_current = 11_500_000  # midpoint Rp 8-15M
+
+    inflation_rate = cd.RETIREMENT_LIVING_INFLATION
+
+    # Project monthly cost at retirement
+    monthly_at_retirement = _project(monthly_current, inflation_rate, years_to_retirement)
+    annual_at_retirement = monthly_at_retirement * 12
+    total_needed = annual_at_retirement * years_in_retirement
+
+    current_total = monthly_current * 12 * years_in_retirement
+
+    lifestyle_label = lifestyle.replace("Custom — enter my own amount", "Custom lifestyle")
+    items = [
+        CostBreakdownItem(
+            "Current estimated monthly spend",
+            monthly_current,
+            f"{city} — {lifestyle_label}",
+        ),
+        CostBreakdownItem(
+            "Years to retirement",
+            years_to_retirement,
+            f"Age {current_age} → {retirement_age}",
+        ),
+        CostBreakdownItem(
+            "Years in retirement",
+            years_in_retirement,
+            f"Age {retirement_age} → {life_expectancy}",
+        ),
+        CostBreakdownItem(
+            "Annual inflation in retirement",
+            inflation_rate * 100,
+            f"{inflation_rate * 100:.0f}% per year",
+        ),
+        CostBreakdownItem(
+            "Monthly cost at retirement",
+            monthly_at_retirement,
+            f"Year {cd.get_current_year() + years_to_retirement}",
+        ),
+        CostBreakdownItem(
+            "Annual cost at retirement",
+            annual_at_retirement,
+            f"12 × monthly",
+        ),
+        CostBreakdownItem(
+            "Total projected retirement fund",
+            total_needed,
+            f"{annual_at_retirement:,.0f}/yr × {years_in_retirement} years",
+        ),
+    ]
+
+    return total_needed, CostBreakdown(
+        current_cost=current_total,
+        projected_cost=total_needed,
+        years_to_goal=years_to_retirement,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# EMERGENCY FUND
+# ══════════════════════════════════════════════════════════════
+
+def calculate_emergency_fund(
+    monthly_salary: float,
+    monthly_expenses: float,
+    coverage_months: int,
+) -> tuple[float, CostBreakdown]:
+    """
+    Emergency fund = monthly expenses × coverage months.
+    No inflation — near-term goal, typically < 2 years to accumulate.
+    """
+    total = monthly_expenses * coverage_months
+
+    items = [
+        CostBreakdownItem(
+            "Monthly take-home salary",
+            monthly_salary,
+            "Total monthly income after tax",
+        ),
+        CostBreakdownItem(
+            "Monthly fixed expenses",
+            monthly_expenses,
+            "Rent, utilities, food, transport",
+        ),
+        CostBreakdownItem(
+            "Coverage duration",
+            coverage_months,
+            "Months of expenses covered",
+        ),
+        CostBreakdownItem(
+            "Total emergency fund needed",
+            total,
+            "No inflation applied — near-term goal",
+        ),
+    ]
+
+    return total, CostBreakdown(
+        current_cost=total,
+        projected_cost=total,
+        years_to_goal=1,  # assume ~1 year to build
+        inflation_rate=0.0,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# WEDDING
+# ══════════════════════════════════════════════════════════════
+
+def calculate_wedding(
+    scale: str,
+    city: str,
+    target_year: int,
+    venue: str,
+    catering: str,
+    entertainment: str,
+) -> tuple[float, CostBreakdown]:
+    """
+    Project wedding cost to target year with inflation.
+    Base × scale × venue × catering × entertainment multipliers.
+    """
+    current_year = cd.get_current_year()
+    years_to_wedding = max(target_year - current_year, 0)
+    inflation_rate = cd.WEDDING_INFLATION_RATE
+
+    base = cd.WEDDING_BASE_COST.get(city, cd.WEDDING_BASE_COST["Jakarta Selatan"])
+    scale_mult = cd.WEDDING_SCALE_MULTIPLIER.get(scale, 1.0)
+    venue_mult = cd.WEDDING_VENUE_MULTIPLIER.get(venue, 1.0)
+    catering_mult = cd.WEDDING_CATERING_MULTIPLIER.get(catering, 1.0)
+    entertainment_mult = cd.WEDDING_ENTERTAINMENT_MULTIPLIER.get(entertainment, 1.0)
+
+    current_total = base * scale_mult * venue_mult * catering_mult * entertainment_mult
+    projected_total = _project(current_total, inflation_rate, years_to_wedding)
+
+    items = [
+        CostBreakdownItem("Base cost", base, f"{city} at today's prices"),
+        CostBreakdownItem("Scale multiplier", scale_mult, f"{scale}"),
+        CostBreakdownItem("Venue multiplier", venue_mult, f"{venue}"),
+        CostBreakdownItem("Catering multiplier", catering_mult, f"{catering}"),
+        CostBreakdownItem("Entertainment multiplier", entertainment_mult, f"{entertainment}"),
+        CostBreakdownItem(
+            "Current estimated cost",
+            current_total,
+            "Today's price",
+        ),
+        CostBreakdownItem(
+            "Annual inflation",
+            inflation_rate * 100,
+            f"{inflation_rate * 100:.0f}% per year",
+        ),
+        CostBreakdownItem(
+            "Years to wedding",
+            years_to_wedding,
+            f"Target: {target_year}",
+        ),
+        CostBreakdownItem(
+            "Total projected cost",
+            projected_total,
+            f"{current_total:,.0f} × {(1 + inflation_rate) ** years_to_wedding:.2f}",
+        ),
+    ]
+
+    return projected_total, CostBreakdown(
+        current_cost=current_total,
+        projected_cost=projected_total,
+        years_to_goal=years_to_wedding,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# CUSTOM GOAL
+# ══════════════════════════════════════════════════════════════
+
+def calculate_custom(
+    goal_name: str,
+    target_amount: Optional[float],
+    target_year: int,
+) -> tuple[float, CostBreakdown]:
+    """Custom goal — user-supplied amount, projected to target year at 6%."""
+    if target_amount is None or target_amount <= 0:
+        return 0.0, CostBreakdown(0.0, 0.0, 0, 0.0)
+
+    current_year = cd.get_current_year()
+    years = max(target_year - current_year, 0)
+    inflation_rate = 0.06  # generic asset inflation assumption
+
+    projected = _project(target_amount, inflation_rate, years)
+
+    items = [
+        CostBreakdownItem("Target amount (today)", target_amount, goal_name),
+        CostBreakdownItem("Years to goal", years, f"Target: {target_year}"),
+        CostBreakdownItem(
+            "Annual inflation",
+            inflation_rate * 100,
+            "Generic 6% assumption",
+        ),
+        CostBreakdownItem(
+            "Projected total needed",
+            projected,
+            f"Amount in {target_year} rupees",
+        ),
+    ]
+
+    return projected, CostBreakdown(
+        current_cost=target_amount,
+        projected_cost=projected,
+        years_to_goal=years,
+        inflation_rate=inflation_rate,
+        items=items,
+    )
+
+
+# ══════════════════════════════════════════════════════════════
+# GOAL BUILDER CLASS
+# ══════════════════════════════════════════════════════════════
 
 class GoalBuilder:
-    CITIES = list(APARTMENT_PRICE_PER_SQM.keys())
+    """Orchestrates the multi-step goal building process."""
 
-    # Property follow-up questions
-    PROPERTY_QUESTIONS = [
-        {
-            "id": "property_size",
-            "question": "What property type are you targeting?",
-            "type": "select",
-            "options": list(LANDED_HOUSE_TYPES.keys()),
-            "key": "size_label",
-        },
-        {
-            "id": "property_location_detail",
-            "question": "Which area / neighbourhood?",
-            "type": "text",
-            "placeholder": "e.g. Kemang, Senayan, Menteng",
-        },
-    ]
+    CITIES = list(cd.APARTMENT_PRICE_PER_SQM.keys())
 
-    # Education follow-up questions
-    EDUCATION_QUESTIONS = [
-        {
-            "id": "education_level",
-            "question": "Education level?",
-            "type": "select",
-            "options": ["TK / SD (Elementary)", "SMP (Junior High)", "SMA / SMK (Senior High)"],
-            "key": "level",
-        },
-        {
-            "id": "school_tier",
-            "question": "School type?",
-            "type": "select",
-            "options": [
-                "Local Private (Rp 0-15M/yr)",
-                "Mid-tier Private (Rp 15-30M/yr)",
-                "Premium Private (Rp 30-60M/yr)",
-                "International School (Rp 60-150M/yr)",
-            ],
-            "key": "tier",
-        },
-    ]
+    @staticmethod
+    def get_steps(goal_type: str) -> list[dict]:
+        return STEPS_BY_GOAL.get(goal_type, [])
 
-    # Retirement follow-up questions
-    RETIREMENT_QUESTIONS = [
-        {
-            "id": "retirement_age",
-            "question": "At what age do you want to retire?",
-            "type": "number",
-            "min": 45,
-            "max": 75,
-        },
-        {
-            "id": "lifestyle",
-            "question": "Desired retirement lifestyle?",
-            "type": "select",
-            "options": [
-                "Basic (Rp 5-8M/month estimated spend)",
-                "Comfortable (Rp 8-15M/month)",
-                "Premium (Rp 15-30M/month)",
-                "Custom — enter my own monthly target",
-            ],
-            "key": "lifestyle",
-        },
-    ]
+    @staticmethod
+    def get_current_year() -> int:
+        return cd.get_current_year()
 
-    # Higher Education follow-up questions
-    HIGHER_ED_QUESTIONS = [
-        {"id": "degree_type", "question": "Degree type?", "type": "select", "options": ["Bachelor's Degree", "Master's Degree", "PhD / Doctorate"]},
-        {"id": "country", "question": "Country of study?", "type": "select", "options": ["Australia", "Europe", "Singapore", "US", "Other"]},
-        {"id": "institution_tier", "question": "Institution tier?", "type": "select", "options": [
-            "Public / State University",
-            "Private University",
-            "Top 50 Global (e.g. NTU, NUS, Melbourne)",
-            "Ivy League / Oxbridge / Top 10",
-        ]},
-    ]
-
-    # Wedding follow-up questions
-    WEDDING_QUESTIONS = [
-        {"id": "wedding_scale", "question": "Wedding style?", "type": "select", "options": [
-            "Simple / Intimate (50-100 guests)",
-            "Moderate / Traditional (200-400 guests)",
-            "Grand / Bilingual (500+ guests)",
-        ]},
-    ]
-
-    # Emergency Fund follow-up questions
-    EMERGENCY_FUND_QUESTIONS = [
-        {"id": "months_covered", "question": "How many months of expenses?", "type": "select", "options": EMERGENCY_FUND_OPTIONS},
-    ]
-
-    def estimate_property_cost(self, city: str, size_label: str) -> float:
+    def build_goal(self, goal_type: str, step_answers: dict) -> GoalProfile:
         """
-        Calculate property cost with apartment vs landed house differentiation.
-
-        Landed houses in Jakarta typically cost 20-40% more per sqm than apartments
-        (land ownership, larger floor plates, garden, parking). We apply a 30% premium.
+        Build a complete GoalProfile from all step answers.
+        step_answers keys vary by goal_type — see calculate_* functions above.
         """
-        config = LANDED_HOUSE_TYPES.get(size_label, {"building_sqm": 50, "landedness": 1.0})
-        building_sqm = config["building_sqm"]
-        landedness = config.get("landedness", 1.0)
+        gtype = goal_type
 
-        if size_label == "Land Only (per sqm)":
-            # Land only: price per sqm of land = apartment price_per_sqm * land factor
-            price_per_sqm = APARTMENT_PRICE_PER_SQM.get(city, APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
-            # Land is sold per sqm; typical urban land parcel in Jakarta ~100-200 sqm
-            total_sqm = 150  # default parcel size
-            base_cost = total_sqm * price_per_sqm
-            return base_cost * PROPERTY_BUFFER
+        if gtype == "Education":
+            cost, breakdown = calculate_education(
+                education_level=step_answers.get("education_level", "Primary"),
+                school_type=step_answers.get("school_type", "Local Private"),
+                child_age=int(step_answers.get("child_age", 6)),
+                city=step_answers.get("city", "Jakarta Selatan"),
+            )
+            level = step_answers.get("education_level", "Primary")
+            stype = step_answers.get("school_type", "Local Private")
+            city = step_answers.get("city", "Jakarta Selatan")
+            description = f"{stype} {level} school in {city}"
 
-        base_price_per_sqm = APARTMENT_PRICE_PER_SQM.get(city, APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
+        elif gtype == "Higher Education":
+            cost, breakdown = calculate_higher_education(
+                degree_level=step_answers.get("degree_level", "Bachelor"),
+                study_location=step_answers.get("study_location", "In Indonesia"),
+                country=step_answers.get("country", "Singapore"),
+                field=step_answers.get("field", "Business / Economics"),
+                years_until_enrollment=int(step_answers.get("years_until_enrollment", 4)),
+            )
+            deg = step_answers.get("degree_level", "Bachelor")
+            loc = step_answers.get("study_location", "In Indonesia")
+            country = step_answers.get("country", "Singapore")
+            description = f"{deg} — {country if loc == 'Abroad' else 'Indonesia'}"
 
-        if landedness >= 1.0:
-            # Pure apartment: building_sqm * price_per_sqm
-            base_cost = building_sqm * base_price_per_sqm
+        elif gtype == "Property":
+            custom_b = step_answers.get("custom_building_sqm")
+            custom_t = step_answers.get("custom_total_sqm")
+            cost, breakdown = calculate_property(
+                property_type=step_answers.get("property_type", "Apartment"),
+                city=step_answers.get("city", "Jakarta Selatan"),
+                area=step_answers.get("area", ""),
+                size_label=step_answers.get("size", "2BR"),
+                target_year=int(step_answers.get("target_year", cd.get_current_year() + 10)),
+                custom_building_sqm=float(custom_b) if custom_b else None,
+                custom_total_sqm=float(custom_t) if custom_t else None,
+            )
+            ptype = step_answers.get("property_type", "Apartment")
+            city = step_answers.get("city", "Jakarta Selatan")
+            size = step_answers.get("size", "2BR")
+            description = f"{size} {ptype} in {city}"
+
+        elif gtype == "Retirement":
+            life_exp = step_answers.get("life_expectancy", 80)
+            if life_exp == "Custom — enter my own assumption":
+                life_exp = int(step_answers.get("custom_life_expectancy", 80))
+            cost, breakdown = calculate_retirement(
+                current_age=int(step_answers.get("current_age", 25)),
+                retirement_age=int(step_answers.get("retirement_age", 55)),
+                city=step_answers.get("city", "Jakarta Selatan"),
+                lifestyle=step_answers.get("lifestyle", "Comfortable (Rp 8-15M/month)"),
+                life_expectancy=int(life_exp) if isinstance(life_exp, int) else 80,
+                custom_monthly=float(step_answers.get("custom_monthly")) if "Custom" in step_answers.get("lifestyle", "") else None,
+            )
+            ret_age = step_answers.get("retirement_age", 55)
+            city = step_answers.get("city", "Jakarta Selatan")
+            description = f"Retirement at age {ret_age} in {city}"
+
+        elif gtype == "Emergency Fund":
+            coverage_str = step_answers.get("coverage", "6 months")
+            coverage_months = int(coverage_str.split()[0]) if coverage_str[0].isdigit() else 6
+            cost, breakdown = calculate_emergency_fund(
+                monthly_salary=float(step_answers.get("monthly_salary", 0)),
+                monthly_expenses=float(step_answers.get("monthly_expenses", 0)),
+                coverage_months=coverage_months,
+            )
+            description = f"Emergency fund — {coverage_str} coverage"
+
+        elif gtype == "Wedding":
+            cost, breakdown = calculate_wedding(
+                scale=step_answers.get("scale", "Standard (50-200 guests)"),
+                city=step_answers.get("city", "Jakarta Selatan"),
+                target_year=int(step_answers.get("target_year", cd.get_current_year() + 3)),
+                venue=step_answers.get("venue", "Garden / Outdoor Venue"),
+                catering=step_answers.get("catering", "Standard"),
+                entertainment=step_answers.get("entertainment", "Basic (MC + Sound)"),
+            )
+            scale = step_answers.get("scale", "Standard (50-200 guests)")
+            city = step_answers.get("city", "Jakarta Selatan")
+            year = step_answers.get("target_year", cd.get_current_year() + 3)
+            description = f"{scale} wedding in {city} ({year})"
+
+        elif gtype == "Custom":
+            amount = step_answers.get("target_amount")
+            year = step_answers.get("target_year", cd.get_current_year() + 5)
+            cost, breakdown = calculate_custom(
+                goal_name=step_answers.get("goal_name", "Custom goal"),
+                target_amount=float(amount) if amount else None,
+                target_year=int(year),
+            )
+            description = step_answers.get("goal_name", "Custom goal")
+
         else:
-            # Landed house: building_sqm * price * premium + land_sqm * price
-            # land_sqm = building_sqm / landedness - building_sqm
-            total_sqm = building_sqm / landedness
-            land_sqm = total_sqm - building_sqm
-            building_cost = building_sqm * base_price_per_sqm * LANDED_HOUSE_PREMIUM
-            land_cost = land_sqm * base_price_per_sqm
-            base_cost = building_cost + land_cost
+            cost, breakdown = 0.0, CostBreakdown(0.0, 0.0, 0, 0.0)
+            description = gtype
 
-        return base_cost * PROPERTY_BUFFER
-
-    def estimate_education_cost(self, level: str, tier_label: str) -> float:
-        tier_map = {
-            "Local Private (Rp 0-15M/yr)": SCHOOL_FEES_ANNUAL["local_private_low"],
-            "Mid-tier Private (Rp 15-30M/yr)": SCHOOL_FEES_ANNUAL["local_private_mid"],
-            "Premium Private (Rp 30-60M/yr)": SCHOOL_FEES_ANNUAL["local_private_high"],
-            "International School (Rp 60-150M/yr)": SCHOOL_FEES_ANNUAL["international_mid"],
-        }
-        annual = tier_map.get(tier_label, SCHOOL_FEES_ANNUAL["local_private_mid"])
-        years_map = {"TK / SD (Elementary)": 6, "SMP (Junior High)": 3, "SMA / SMK (Senior High)": 3}
-        years = years_map.get(level, 3)
-        return annual * years
-
-    def estimate_retirement_cost(
-        self,
-        current_age: int,
-        retirement_age: int,
-        lifestyle: str,
-        custom_monthly: Optional[float] = None,
-    ) -> float:
-        if "Custom" in lifestyle and custom_monthly is not None:
-            annual = custom_monthly * 12
-        else:
-            lifestyle_key = "basic"
-            if "Comfortable" in lifestyle:
-                lifestyle_key = "comfortable"
-            elif "Premium" in lifestyle:
-                lifestyle_key = "premium"
-            annual = RETIREMENT_ANNUAL_EXPENSE[lifestyle_key]
-        years = max(retirement_age - current_age, 1)
-        return annual * years
-
-    def estimate_higher_education_cost(self, country: str, tier: str, degree: str) -> float:
-        base_annual_map = {
-            "Australia": (80_000_000, 150_000_000),
-            "Europe": (100_000_000, 200_000_000),
-            "Singapore": (120_000_000, 250_000_000),
-            "US": (150_000_000, 350_000_000),
-            "Other": (80_000_000, 180_000_000),
-        }
-        tier_multiplier = {
-            "Public / State University": 0.8,
-            "Private University": 1.0,
-            "Top 50 Global (e.g. NTU, NUS, Melbourne)": 1.3,
-            "Ivy League / Oxbridge / Top 10": 1.8,
-        }
-        degree_years = {"Bachelor's Degree": 4, "Master's Degree": 2, "PhD / Doctorate": 4}
-        annual_range = base_annual_map.get(country, (100_000_000, 200_000_000))
-        mid = (annual_range[0] + annual_range[1]) / 2
-        years = degree_years.get(degree, 4)
-        multiplier = tier_multiplier.get(tier, 1.0)
-        base_cost = mid * years * multiplier
-        depreciated = base_cost * ((1 + IDR_DEPRECIATION_RATE) ** years) * ABROAD_BUFFER
-        return depreciated
-
-    def estimate_wedding_cost(self, scale: str) -> float:
-        scale_map = {
-            "Simple / Intimate (50-100 guests)": WEDDING_COST["simple"],
-            "Moderate / Traditional (200-400 guests)": WEDDING_COST["moderate"],
-            "Grand / Bilingual (500+ guests)": WEDDING_COST["grand"],
-        }
-        return scale_map.get(scale, WEDDING_COST["moderate"])
-
-    def estimate_emergency_fund_cost(
-        self,
-        city: str,
-        months_label: str,
-        custom_monthly_expenses: Optional[float] = None,
-    ) -> float:
-        if "Custom" in months_label and custom_monthly_expenses is not None:
-            monthly_living = custom_monthly_expenses
-        else:
-            monthly_living = LIVING_COST_MONTHLY.get(city, 6_000_000)
-        months_map = {
-            "3 months (minimum)": 3,
-            "6 months (standard)": 6,
-            "12 months (conservative)": 12,
-        }
-        months = months_map.get(months_label, 6)
-        return monthly_living * months
-
-    def estimate_custom_cost(self, target_amount: Optional[float] = None) -> Optional[float]:
-        return target_amount
-
-    def build_goal(self, goal_type: str, city: str, answers: dict) -> GoalProfile:
-        cost = 0.0
-        description = ""
-
-        if goal_type == "Property":
-            size_label = answers.get("property_size", list(LANDED_HOUSE_TYPES.keys())[0])
-            cost = self.estimate_property_cost(city, size_label)
-            description = f"{size_label} in {city}"
-
-        elif goal_type == "Education":
-            level = answers.get("education_level", "SMA / SMK (Senior High)")
-            tier = answers.get("school_tier", "Mid-tier Private (Rp 15-30M/yr)")
-            cost = self.estimate_education_cost(level, tier)
-            description = f"{tier} {level} education"
-
-        elif goal_type == "Retirement":
-            lifestyle = answers.get("retirement", "Comfortable (Rp 8-15M/month)")
-            current_age = answers.get("current_age", 25)
-            retirement_age = answers.get("retirement_age", 55)
-            custom_monthly = answers.get("custom_retirement_monthly")
-            cost = self.estimate_retirement_cost(current_age, retirement_age, lifestyle, custom_monthly)
-            desc_lifestyle = lifestyle.replace("Custom — enter my own monthly target", "Custom lifestyle")
-            description = f"{desc_lifestyle} retirement from age {retirement_age}"
-
-        elif goal_type == "Higher Education":
-            country = answers.get("country", "Singapore")
-            tier = answers.get("institution_tier", "Private University")
-            degree = answers.get("degree_type", "Bachelor's Degree")
-            cost = self.estimate_higher_education_cost(country, tier, degree)
-            description = f"{degree} at {tier} in {country}"
-
-        elif goal_type == "Wedding":
-            scale = answers.get("wedding_scale", "Moderate / Traditional (200-400 guests)")
-            cost = self.estimate_wedding_cost(scale)
-            description = f"{scale} wedding"
-
-        elif goal_type == "Emergency Fund":
-            months_label = answers.get("months_covered", "6 months (standard)")
-            custom_monthly = answers.get("custom_emergency_monthly")
-            cost = self.estimate_emergency_fund_cost(city, months_label, custom_monthly)
-            desc_months = months_label.replace("Custom — enter my own monthly expenses", "Custom expenses")
-            description = f"{desc_months} emergency fund for {city}"
-
-        elif goal_type == "Custom":
-            custom_amount = answers.get("custom_amount")
-            if custom_amount:
-                cost = custom_amount
-                description = answers.get("custom_description", f"Custom goal: Rp {custom_amount:,.0f}")
-            else:
-                description = answers.get("custom_description", "Custom financial goal")
+        timeline_years = breakdown.years_to_goal if breakdown else 0
 
         return GoalProfile(
-            goal_type=goal_type,
-            city=city,
+            goal_type=gtype,
+            city=step_answers.get("city", ""),
             estimated_cost=cost,
-            timeline_years=answers.get("timeline_years", 10),
+            timeline_years=timeline_years,
             description=description,
+            breakdown=breakdown,
         )
-
-
-if __name__ == "__main__":
-    gb = GoalBuilder()
-
-    print("=== Property Goal (Apartment) ===")
-    profile = gb.build_goal("Property", "Jakarta Selatan", {
-        "property_size": "2BR Apartment (45-65 sqm)",
-        "timeline_years": 10,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Property Goal (Landed House) ===")
-    profile = gb.build_goal("Property", "Jakarta Selatan", {
-        "property_size": "Medium Landed House / Tipe 45-54 (45-54 sqm building)",
-        "timeline_years": 10,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Education Goal ===")
-    profile = gb.build_goal("Education", "Jakarta Selatan", {
-        "education_level": "SMA / SMK (Senior High)",
-        "school_tier": "International School (Rp 60-150M/yr)",
-        "timeline_years": 5,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Retirement Goal ===")
-    profile = gb.build_goal("Retirement", "Bandung", {
-        "current_age": 25,
-        "retirement_age": 55,
-        "retirement": "Comfortable (Rp 8-15M/month)",
-        "timeline_years": 30,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Higher Education (Abroad) ===")
-    profile = gb.build_goal("Higher Education", "Singapore", {
-        "degree_type": "Master's Degree",
-        "country": "Singapore",
-        "institution_tier": "Top 50 Global (e.g. NTU, NUS, Melbourne)",
-        "timeline_years": 2,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Wedding Goal ===")
-    profile = gb.build_goal("Wedding", "Surabaya", {
-        "wedding_scale": "Moderate / Traditional (200-400 guests)",
-        "timeline_years": 3,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")
-
-    print("\n=== Emergency Fund ===")
-    profile = gb.build_goal("Emergency Fund", "Bandung", {
-        "months_covered": "6 months (standard)",
-        "timeline_years": 1,
-    })
-    print(f"  Cost: Rp {profile.estimated_cost:,.0f}")

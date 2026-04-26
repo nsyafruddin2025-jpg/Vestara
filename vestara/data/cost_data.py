@@ -3,7 +3,136 @@ Cost data seed for Indonesian cities — 2025 realistic figures.
 All values in IDR unless otherwise noted.
 """
 
-# ── Apartment prices per sqm (building footprint, IDR) ────────────────────────
+import datetime
+
+# ══════════════════════════════════════════════════════════════
+# INFLATION & ADJUSTMENT RATES
+# ══════════════════════════════════════════════════════════════
+
+PROPERTY_INFLATION_RATE = 0.06       # Annual property price inflation
+PROPERTY_BUFFER = 1.15              # 15%: PPHTB + BPHTB + notary + agent fees
+
+EDUCATION_INFLATION_RATE = {
+    "Government": 0.08,      # Government schools: limited by state funding
+    "Local Private": 0.08,   # Local private: similar to government inflation
+    "National Plus": 0.10,   # National Plus: premium segment, higher inflation
+    "International": 0.12,   # International: fastest-growing segment
+}
+
+HIGHER_ED_TUITION_INFLATION = 0.05  # Annual tuition inflation (local & abroad)
+RETIREMENT_LIVING_INFLATION = 0.04  # Annual cost of living inflation in retirement
+WEDDING_INFLATION_RATE = 0.05       # Annual wedding cost inflation
+IDR_DEPRECIATION_RATE = 0.04         # IDR weakens vs major currencies annually
+CURRENCY_RISK_BUFFER = 0.10         # 10% buffer for forex volatility
+
+# ══════════════════════════════════════════════════════════════
+# EDUCATION: CHILD'S SCHOOL
+# ══════════════════════════════════════════════════════════════
+
+EDUCATION_ENTRY_AGE = {
+    "Primary": 6,      # SD: entry at 6
+    "Secondary": 12,   # SMP: entry at 12
+    "High School": 15, # SMA: entry at 15
+}
+
+EDUCATION_DURATION = {
+    "Primary": 6,      # SD: 6 years
+    "Secondary": 3,    # SMP: 3 years
+    "High School": 3,  # SMA: 3 years
+}
+
+# Annual school fees by level × city (IDR)
+# Level: Primary / Secondary / High School
+SCHOOL_FEES_ANNUAL = {
+    # ── Government schools (negligible tuition, some levies) ──
+    "Government": {
+        "Jakarta Selatan": 3_000_000, "Jakarta Pusat": 3_000_000, "Jakarta Utara": 2_500_000,
+        "Bandung": 2_000_000, "Surabaya": 2_500_000, "Yogyakarta": 1_800_000,
+        "Medan": 1_500_000, "Bali (Denpasar)": 2_000_000, "Semarang": 1_800_000, "Makassar": 2_000_000,
+    },
+    # ── Local Private schools ──
+    "Local Private": {
+        "Jakarta Selatan": 12_000_000, "Jakarta Pusat": 10_000_000, "Jakarta Utara": 8_000_000,
+        "Bandung": 8_000_000, "Surabaya": 9_000_000, "Yogyakarta": 7_000_000,
+        "Medan": 6_000_000, "Bali (Denpasar)": 8_000_000, "Semarang": 6_500_000, "Makassar": 7_000_000,
+    },
+    # ── National Plus schools ──
+    "National Plus": {
+        "Jakarta Selatan": 30_000_000, "Jakarta Pusat": 28_000_000, "Jakarta Utara": 25_000_000,
+        "Bandung": 25_000_000, "Surabaya": 26_000_000, "Yogyakarta": 22_000_000,
+        "Medan": 20_000_000, "Bali (Denpasar)": 25_000_000, "Semarang": 20_000_000, "Makassar": 22_000_000,
+    },
+    # ── International schools (annual tuition, USD-denominated converted) ──
+    # Using Rp 16,000/USD approximation; international schools charge USD
+    "International": {
+        "Jakarta Selatan": 180_000_000, "Jakarta Pusat": 170_000_000, "Jakarta Utara": 150_000_000,
+        "Bandung": 150_000_000, "Surabaya": 160_000_000, "Yogyakarta": 140_000_000,
+        "Medan": 130_000_000, "Bali (Denpasar)": 160_000_000, "Semarang": 130_000_000, "Makassar": 140_000_000,
+    },
+}
+
+EDUCATION_LEVELS = ["Primary", "Secondary", "High School"]
+EDUCATION_SCHOOL_TYPES = ["Government", "Local Private", "National Plus", "International"]
+
+# ══════════════════════════════════════════════════════════════
+# HIGHER EDUCATION
+# ══════════════════════════════════════════════════════════════
+
+HIGHER_ED_DEGREE_DURATION = {
+    "Bachelor": 4,
+    "Master": 2,
+    "PhD": 4,   # conservative: 4 years avg for PhD completion
+}
+
+# Tuition per year by country × field (IDR, converted from local currency)
+# Field multipliers: Business/Economics=1.0, Engineering/Tech=1.2, Medicine/Health=1.8, Law=1.1, Arts/SocialScience=0.9, Other=1.0
+HIGHER_ED_BASE_ANNUAL_TUITION = {
+    "Indonesia": {
+        "public": (15_000_000, 25_000_000),    # UI/UGM public university
+        "private": (30_000_000, 80_000_000),    # Private university
+        "top_private": (100_000_000, 200_000_000),  # President University, Binus
+    },
+    "Singapore": (150_000_000, 350_000_000),   # NUS/NTU/SMU
+    "Australia": (120_000_000, 300_000_000),   # ANU/UniMelb/UNSW
+    "UK": (150_000_000, 400_000_000),         # Russell Group
+    "USA": (200_000_000, 600_000_000),        # Top 50 universities
+    "Netherlands": (100_000_000, 250_000_000), # TU Delft, UvA
+    "Germany": (5_000_000, 30_000_000),        # Public universities (minimal tuition)
+    "Japan": (50_000_000, 150_000_000),        # Top Japanese universities
+    "Other": (80_000_000, 200_000_000),
+}
+
+# Field cost multipliers applied to base tuition
+HIGHER_ED_FIELD_MULTIPLIER = {
+    "Business / Economics": 1.0,
+    "Engineering / Technology": 1.2,
+    "Medicine / Health": 1.8,
+    "Law": 1.1,
+    "Arts / Social Science": 0.9,
+    "Other": 1.0,
+}
+
+# Annual living costs by country (IDR)
+HIGHER_ED_ANNUAL_LIVING = {
+    "Indonesia": 36_000_000,     # Rp 3M/month
+    "Singapore": 120_000_000,    # SGD 3,500/month
+    "Australia": 96_000_000,     # AUD 12,000/yr
+    "UK": 108_000_000,          # GBP 7,000/yr
+    "USA": 144_000_000,         # USD 9,000/yr
+    "Netherlands": 84_000_000,  # EUR 7,000/yr
+    "Germany": 72_000_000,       # EUR 6,000/yr
+    "Japan": 96_000_000,         # JPY 900,000/yr
+    "Other": 80_000_000,
+}
+
+HIGHER_ED_ABROAD_COUNTRIES = ["Singapore", "Australia", "UK", "USA", "Netherlands", "Germany", "Japan", "Other"]
+HIGHER_ED_DEGREE_LEVELS = ["Bachelor", "Master", "PhD"]
+HIGHER_ED_FIELDS = list(HIGHER_ED_FIELD_MULTIPLIER.keys())
+
+# ══════════════════════════════════════════════════════════════
+# PROPERTY
+# ══════════════════════════════════════════════════════════════
+
 APARTMENT_PRICE_PER_SQM = {
     "Jakarta Selatan": 42_000_000,
     "Jakarta Pusat": 38_000_000,
@@ -17,56 +146,123 @@ APARTMENT_PRICE_PER_SQM = {
     "Makassar": 11_000_000,
 }
 
-# ── Landed house configuration ────────────────────────────────────────────────
-# landedness = building_sqm / total_sqm (rest is land)
-# e.g. Tipe 36: building=36 sqm, land=60 sqm → landedness=0.60
-LANDED_HOUSE_TYPES = {
-    # Apartment types (landedness=1.0, pure building sqm)
-    "Studio / 1BR Apartment (24-36 sqm)":   {"building_sqm": 30,  "landedness": 1.0},
-    "2BR Apartment (45-65 sqm)":            {"building_sqm": 55,  "landedness": 1.0},
-    "3BR Apartment (75-100 sqm)":           {"building_sqm": 85,  "landedness": 1.0},
-    # Landed house types (building < total, premium applies)
-    "Small Landed House / Tipe 36 (36 sqm building, 60 sqm land)":  {"building_sqm": 36,  "landedness": 0.60},
-    "Medium Landed House / Tipe 45-54 (45-54 sqm building)":         {"building_sqm": 50,  "landedness": 0.70},
-    "Large Landed House / Tipe 70-120 (70-120 sqm building)":        {"building_sqm": 95,  "landedness": 0.75},
-    "Villa / Premium Landed (120 sqm+)":     {"building_sqm": 140, "landedness": 0.80},
-    "Shophouse / Ruko":                     {"building_sqm": 80,  "landedness": 0.90},
-    "Land Only (per sqm)":                  {"building_sqm": 0,   "landedness": 0.00},
-}
-
-# Landed houses in Jakarta command ~30% premium over equivalent apartment sqm
-# (land ownership, larger floor plates, garden, parking)
+# Landed houses command ~30% premium (land ownership, garden, parking)
 LANDED_HOUSE_PREMIUM = 1.30
 
-# Backward-compatibility alias
-PROPERTY_PRICE_PER_SQM = APARTMENT_PRICE_PER_SQM
-
-# ── School fees ────────────────────────────────────────────────────────────────
-SCHOOL_FEES_ANNUAL = {
-    "local_private_low": 3_000_000,
-    "local_private_mid": 8_000_000,
-    "local_private_high": 18_000_000,
-    "international_mid": 60_000_000,
-    "international_top": 150_000_000,
+# Apartment sizes (building sqm, no land component)
+APARTMENT_SIZES = {
+    "Studio / 1BR": 30,
+    "2BR": 55,
+    "3BR": 85,
+    "4BR+": 120,
 }
 
-# ── Living costs ──────────────────────────────────────────────────────────────
+# Landed house sizes (building sqm, with land)
+LANDED_HOUSE_SIZES = {
+    "Tipe 36": {"building_sqm": 36,  "total_sqm": 60},
+    "Tipe 45": {"building_sqm": 45,  "total_sqm": 72},
+    "Tipe 54": {"building_sqm": 54,  "total_sqm": 90},
+    "Tipe 70": {"building_sqm": 70,  "total_sqm": 120},
+    "Tipe 120": {"building_sqm": 120, "total_sqm": 200},
+    "Custom": None,  # user enters building_sqm and total_sqm manually
+}
+
+PROPERTY_TYPES = ["Apartment", "Landed House", "Land Only", "Shophouse / Ruko"]
+
+PROPERTY_SIZES_BY_TYPE = {
+    "Apartment": list(APARTMENT_SIZES.keys()),
+    "Landed House": list(LANDED_HOUSE_SIZES.keys()),
+    "Land Only": ["Per sqm — enter total land size below"],
+    "Shophouse / Ruko": ["Custom (enter sqm below)"],
+}
+
+PROPERTY_PRICE_PER_SQM = APARTMENT_PRICE_PER_SQM  # backward compatibility alias
+
+# ══════════════════════════════════════════════════════════════
+# RETIREMENT
+# ══════════════════════════════════════════════════════════════
+
+RETIREMENT_ANNUAL_EXPENSE = {
+    "basic": 60_000_000,         # Rp 5M/month
+    "comfortable": 120_000_000,  # Rp 10M/month
+    "premium": 240_000_000,     # Rp 20M/month
+}
+
+RETIREMENT_LIFESTYLE_OPTIONS = [
+    "Basic (Rp 5-8M/month)",
+    "Comfortable (Rp 8-15M/month)",
+    "Premium (Rp 15-30M/month)",
+    "Custom — enter my own amount",
+]
+
+LIFE_EXPECTANCY_OPTIONS = [75, 80, 85, "Custom — enter my own assumption"]
+
+# ══════════════════════════════════════════════════════════════
+# EMERGENCY FUND
+# ══════════════════════════════════════════════════════════════
+
+EMERGENCY_FUND_COVERAGE_OPTIONS = [
+    "3 months",
+    "6 months",
+    "9 months",
+    "12 months",
+]
+
+EMERGENCY_FUND_MULTIPLE = 6
+
+# ══════════════════════════════════════════════════════════════
+# WEDDING
+# ══════════════════════════════════════════════════════════════
+
+WEDDING_BASE_COST = {
+    # (city: base_cost) — mid-range estimates
+    "Jakarta Selatan": 150_000_000, "Jakarta Pusat": 140_000_000, "Jakarta Utara": 120_000_000,
+    "Bandung": 100_000_000, "Surabaya": 110_000_000, "Yogyakarta": 80_000_000,
+    "Medan": 70_000_000, "Bali (Denpasar)": 130_000_000, "Semarang": 70_000_000, "Makassar": 90_000_000,
+}
+
+WEDDING_SCALE_MULTIPLIER = {
+    "Intimate (up to 50 guests)": 0.5,
+    "Standard (50-200 guests)": 1.0,
+    "Grand (200+ guests)": 1.8,
+}
+
+WEDDING_VENUE_MULTIPLIER = {
+    "Home / Family House": 0.5,
+    "Restaurant": 0.8,
+    "Garden / Outdoor Venue": 1.0,
+    "Hotel Ballroom": 1.5,
+}
+
+WEDDING_CATERING_MULTIPLIER = {
+    "Standard": 1.0,
+    "Premium": 1.4,
+}
+
+WEDDING_ENTERTAINMENT_MULTIPLIER = {
+    "Basic (MC + Sound)": 1.0,
+    "Band / DJ": 1.3,
+    "Full Production (Band + MC + Decoration)": 1.8,
+}
+
+WEDDING_SCALES = list(WEDDING_SCALE_MULTIPLIER.keys())
+WEDDING_VENUES = list(WEDDING_VENUE_MULTIPLIER.keys())
+WEDDING_CATERING = list(WEDDING_CATERING_MULTIPLIER.keys())
+WEDDING_ENTERTAINMENT = list(WEDDING_ENTERTAINMENT_MULTIPLIER.keys())
+
+# Legacy alias
+WEDDING_COST = WEDDING_BASE_COST  # for backward compat in old code paths
+
+# ══════════════════════════════════════════════════════════════
+# LIVING COSTS & COMMON DATA
+# ══════════════════════════════════════════════════════════════
+
 LIVING_COST_MONTHLY = {
-    "Jakarta Selatan": 8_500_000,
-    "Jakarta Pusat": 7_500_000,
-    "Jakarta Utara": 6_000_000,
-    "Bandung": 5_000_000,
-    "Surabaya": 5_500_000,
-    "Yogyakarta": 4_000_000,
-    "Medan": 3_500_000,
-    "Bali (Denpasar)": 6_500_000,
-    "Semarang": 3_800_000,
-    "Makassar": 4_200_000,
+    "Jakarta Selatan": 8_500_000, "Jakarta Pusat": 7_500_000, "Jakarta Utara": 6_000_000,
+    "Bandung": 5_000_000, "Surabaya": 5_500_000, "Yogyakarta": 4_000_000,
+    "Medan": 3_500_000, "Bali (Denpasar)": 6_500_000, "Semarang": 3_800_000, "Makassar": 4_200_000,
 }
 
-CITY_LIVING_COST_INDEX = {city: idx for idx, (_, city) in enumerate(sorted(LIVING_COST_MONTHLY.items()), 1)}
-
-# ── Salary brackets ───────────────────────────────────────────────────────────
 SALARY_DISTRIBUTION = {
     "fresh_graduate": (5_000_000, 8_000_000),
     "mid_career": (10_000_000, 25_000_000),
@@ -79,53 +275,11 @@ INCOME_GROWTH_RATE_ANNUAL = {
     "senior": (0.03, 0.08),
 }
 
-# ── Goal types ────────────────────────────────────────────────────────────────
-GOAL_TYPES = [
-    "Property",
-    "Education",
-    "Retirement",
-    "Emergency Fund",
-    "Wedding",
-    "Higher Education",
-    "Custom",
-]
+GOAL_TYPES = ["Property", "Education", "Retirement", "Emergency Fund", "Wedding", "Higher Education", "Custom"]
 
-# ── Education abroad ─────────────────────────────────────────────────────────
-EDUCATION_ABROAD_ANNUAL = {
-    "Australia": (80_000_000, 200_000_000),
-    "Europe": (100_000_000, 250_000_000),
-    "Singapore": (120_000_000, 300_000_000),
-    "US": (150_000_000, 400_000_000),
-}
+# ══════════════════════════════════════════════════════════════
+# UTILITY
+# ══════════════════════════════════════════════════════════════
 
-# ── Retirement ───────────────────────────────────────────────────────────────
-# Annual expense estimates per lifestyle tier
-RETIREMENT_ANNUAL_EXPENSE = {
-    "basic": 60_000_000,      # Rp 5M/month
-    "comfortable": 120_000_000,  # Rp 10M/month
-    "premium": 240_000_000,     # Rp 20M/month
-}
-
-RETIREMENT_LIFESTYLE_OPTIONS = [
-    "Basic (Rp 5-8M/month estimated spend)",
-    "Comfortable (Rp 8-15M/month)",
-    "Premium (Rp 15-30M/month)",
-    "Custom — enter my own monthly target",
-]
-
-# ── Wedding ───────────────────────────────────────────────────────────────────
-WEDDING_COST = {
-    "simple": 30_000_000,
-    "moderate": 80_000_000,
-    "grand": 200_000_000,
-}
-
-# ── Emergency fund ───────────────────────────────────────────────────────────
-EMERGENCY_FUND_OPTIONS = [
-    "3 months (minimum)",
-    "6 months (standard)",
-    "12 months (conservative)",
-    "Custom — enter my own monthly expenses",
-]
-
-EMERGENCY_FUND_MULTIPLE = 6
+def get_current_year() -> int:
+    return datetime.datetime.now().year
