@@ -1,0 +1,148 @@
+{
+  "version": "1.0",
+  "fetched_at": "2026-04-29T19:19:23.079872",
+  "freshness": {
+    "status": "fallback",
+    "last_updated": "2026-04-01",
+    "source": "cost_data.py",
+    "days_old": 999
+  },
+  "costs": {
+    "Jakarta Selatan": {
+      "monthly_cost": 8500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Jakarta Pusat": {
+      "monthly_cost": 7500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Jakarta Utara": {
+      "monthly_cost": 6000000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Bandung": {
+      "monthly_cost": 5000000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Surabaya": {
+      "monthly_cost": 5500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Yogyakarta": {
+      "monthly_cost": 4000000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Medan": {
+      "monthly_cost": 3500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Bali (Denpasar)": {
+      "monthly_cost": 6500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Semarang": {
+      "monthly_cost": 3800000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Makassar": {
+      "monthly_cost": 4200000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Jakarta Timur": {
+      "monthly_cost": 5500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Jakarta Barat": {
+      "monthly_cost": 6500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Depok": {
+      "monthly_cost": 4500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Bekasi": {
+      "monthly_cost": 4800000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Tangerang": {
+      "monthly_cost": 5000000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Tangerang Selatan": {
+      "monthly_cost": 5500000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    },
+    "Bogor": {
+      "monthly_cost": 4200000,
+      "currency": "IDR",
+      "last_updated": "2026-04-01",
+      "source": "BASELINE_FALLBACK",
+      "source_url": null,
+      "reliability": "LOW"
+    }
+  }
+}

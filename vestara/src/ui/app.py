@@ -37,96 +37,463 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 * { font-family: 'Inter', sans-serif !important; }
-.block-container { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-.main .block-container { padding-left: 2rem !important; padding-right: 2rem !important; }
-[data-testid="stApp"] { background-color: #0A0A0F !important; }
-[data-testid="stSidebar"] { background-color: #0D0D14 !important; border-right: 1px solid #1E1E2E !important; }
-.st-ca { background-color: #13131A !important; }
-h1, h2, h3, h4, h5, h6 { color: #F8FAFC !important; font-weight: 700 !important; }
-p, span, div { color: #94A3B8 !important; }
+
+/* ── 1. TYPOGRAPHY ───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 { color: #F8FAFC !important; }
+h1 { font-size: 3rem !important; font-weight: 900 !important; color: #F8FAFC !important; }
+h2 { font-size: 1.5rem !important; font-weight: 800 !important; color: #E2E8F0 !important; position: relative !important; display: inline-block !important; padding-bottom: 0.5rem !important; }
+h2::after { content: '' !important; position: absolute !important; bottom: 0 !important; left: 0 !important; width: 40px !important; height: 3px !important; background: #06B6D4 !important; border-radius: 2px !important; }
+h3 { font-size: 1.25rem !important; font-weight: 700 !important; color: #E2E8F0 !important; }
+h4 { font-size: 1.1rem !important; font-weight: 700 !important; color: #E2E8F0 !important; }
+p, span, div { color: #94A3B8 !important; font-size: 0.95rem !important; font-weight: 400 !important; line-height: 1.7 !important; }
+.st-aa { font-size: 0.95rem !important; font-weight: 400 !important; color: #94A3B8 !important; line-height: 1.7 !important; }
+.st-je { font-size: 0.95rem !important; font-weight: 400 !important; color: #94A3B8 !important; line-height: 1.7 !important; }
+
+/* Labels and captions */
+.st-cb, .st-cd, [data-testid="stCaption"], [data-testid="stAlert"] { font-size: 0.75rem !important; font-weight: 500 !important; color: #64748B !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; }
+
+/* Metric labels */
+[data-testid="stMetricLabel"] { font-size: 0.75rem !important; font-weight: 500 !important; color: #64748B !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; order: -1 !important; }
+[data-testid="stMetricValue"] { font-size: 1.5rem !important; font-weight: 700 !important; color: #F8FAFC !important; }
+
+/* ── 2. LAYOUT & SPACING ─────────────────────────────────────── */
+.block-container { padding-top: 3rem !important; padding-bottom: 2rem !important; }
+.main .block-container { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+[data-testid="stApp"] { background-color: #0D1B3E !important; }
+section[data-testid="stMainBlockContainer"] > div { padding-left: 1.5rem; padding-right: 1.5rem; }
+section[data-testid="stMainBlockContainer"] > div > div { gap: 1.5rem !important; }
+
+/* ── 3. SCROLLBAR ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0A0A0F; }
-::-webkit-scrollbar-thumb { background: #1E1E2E; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
-.vestara-card { background-color: #13131A; border: 1px solid #1E1E2E; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
-.verdict-green { border: 2px solid #10B981; box-shadow: 0 0 30px rgba(16,185,129,0.15); }
-.verdict-yellow { border: 2px solid #F59E0B; box-shadow: 0 0 30px rgba(245,158,11,0.15); }
-.verdict-red { border: 2px solid #EF4444; box-shadow: 0 0 30px rgba(239,68,68,0.15); }
-.st-dg > div > button:first-child { background: linear-gradient(135deg, #7C3AED, #6D28D9) !important; color: white !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; padding: 0.5rem 1.5rem !important; transition: all 0.2s ease !important; }
-.st-dg > div > button:first-child:hover { background: linear-gradient(135deg, #8B5CF6, #7C3AED) !important; box-shadow: 0 4px 20px rgba(124,58,237,0.4) !important; }
-[data-testid="stTextInput"] input, [data-testid="stNumberInput"] input, [data-testid="stSelectbox"] > div > div, [data-testid="stTextArea"] textarea { background-color: #13131A !important; border: 1px solid #1E1E2E !important; color: #F8FAFC !important; border-radius: 10px !important; }
-[data-testid="stTextInput"] input:focus, [data-testid="stNumberInput"] input:focus, [data-testid="stSelectbox"] > div > div:focus, [data-testid="stTextArea"] textarea:focus { border-color: #7C3AED !important; box-shadow: 0 0 0 2px rgba(124,58,237,0.2) !important; }
-[data-testid="stRadio"] label { color: #F8FAFC !important; }
-[data-testid="stRadio"] label:hover { color: #7C3AED !important; }
-.st-abq .css-1aehpvj { background-color: #7C3AED !important; }
-.st-abq .css-1632mt { background-color: #1E1E2E !important; }
-.st-cj .css-1v0mbg9 { background-color: #7C3AED !important; }
-[data-testid="stSidebarNav"] span { color: #F8FAFC !important; }
-[data-testid="stSidebarNav"] span:hover { color: #7C3AED !important; }
+::-webkit-scrollbar-track { background: #0D1B3E; }
+::-webkit-scrollbar-thumb { background: #1B3A6B; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4F8EF7; }
+
+/* ── 4. SIDEBAR ──────────────────────────────────────────────── */
+[data-testid="stSidebar"] { background-color: #0A1628 !important; border-right: none !important; padding: 1.5rem 1rem !important; position: relative !important; }
+[data-testid="stSidebar"]::before { content: '' !important; position: absolute !important; top: 0 !important; right: 0 !important; width: 3px !important; height: 100% !important; background: linear-gradient(180deg, #4F8EF7, #06B6D4) !important; }
+.sidebar-brand { font-size: 1.5rem !important; font-weight: 800 !important; color: #F8FAFC !important; margin-bottom: 0.5rem !important; padding-bottom: 0.75rem !important; }
+.sidebar-tagline { font-size: 0.8rem !important; color: #64748B !important; margin-bottom: 2rem !important; font-weight: 400 !important; letter-spacing: 0.02em !important; }
+
+/* Navigation items */
+[data-testid="stSidebarNav"] span { font-size: 0.95rem !important; font-weight: 500 !important; color: #94A3B8 !important; padding: 0.75rem 1rem !important; border-radius: 8px !important; transition: all 0.2s ease !important; }
+[data-testid="stSidebarNav"] span:hover { color: #F8FAFC !important; background: rgba(124,58,237,0.1) !important; }
+.st-dn { padding: 0.75rem 1rem !important; border-radius: 8px !important; transition: all 0.2s ease !important; }
+.st-dn:hover { background: rgba(124,58,237,0.15) !important; }
+.st-dn:has([data-testid="stSidebarNav"]:not(:empty)) { background: rgba(124,58,237,0.2) !important; border-left: 3px solid #4F8EF7 !important; color: #F8FAFC !important; }
+
+/* Sidebar radio/select styling */
+[data-testid="stSidebar"] .st-cb, [data-testid="stSidebar"] .st-cd { color: #94A3B8 !important; }
+
+/* ── 5. BUTTONS ──────────────────────────────────────────────── */
+.st-dg > div > button {
+    background: linear-gradient(135deg, #4F8EF7, #4F46E5) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    padding: 0.75rem 2rem !important;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.4) !important;
+    transition: all 0.2s ease !important;
+}
+.st-dg > div > button:hover {
+    filter: brightness(1.1) !important;
+    box-shadow: 0 6px 25px rgba(124,58,237,0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Goal card buttons - styled as full cards */
+[data-testid="stButton"] > button {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 20px !important;
+    min-height: 180px !important;
+    width: 100% !important;
+    color: #0D1B3E !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    padding: 2rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    transition: all 0.2s ease !important;
+    white-space: pre-line !important;
+    text-align: center !important;
+}
+[data-testid="stButton"] > button:hover {
+    background: #F8FAFC !important;
+    border-color: #4F8EF7 !important;
+    box-shadow: 0 4px 20px rgba(79,142,247,0.2) !important;
+}
+
+/* Override card styling for utility buttons in sidebar */
+[data-testid="stSidebar"] [data-testid="stButton"] > button {
+    background: #1B3A6B !important;
+    border: 1px solid #1B3A6B !important;
+    border-radius: 8px !important;
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    white-space: nowrap !important;
+}
+
+/* Utility button wrapper */
+.utility-btn [data-testid="stButton"] > button {
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0.4rem 1rem !important;
+    font-size: 0.85rem !important;
+    background: transparent !important;
+    border: 1px solid #1B3A6B !important;
+    border-radius: 8px !important;
+    color: #94A3B8 !important;
+}
+
+/* Navigation button wrapper */
+.nav-btn [data-testid="stButton"] > button {
+    min-height: unset !important;
+    height: auto !important;
+    padding: 0.5rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    background: linear-gradient(135deg, #4F8EF7, #3B6FD4) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* ── 6. CARDS ────────────────────────────────────────────────── */
+.vestara-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    margin-bottom: 2.5rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+    transition: all 0.2s ease !important;
+}
+.vestara-card:hover {
+    border-color: #4F8EF7 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+/* Goal cards */
+.goal-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 2px solid #252532 !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.05) !important;
+    min-height: 180px !important;
+}
+.goal-card:hover {
+    border-color: #06B6D4 !important;
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 0 12px 40px rgba(6,182,212,0.2), 0 0 1px rgba(255,255,255,0.08) !important;
+}
+.goal-card.selected {
+    border-color: #06B6D4 !important;
+    box-shadow: 0 0 24px rgba(6,182,212,0.35), 0 0 1px rgba(255,255,255,0.08) !important;
+    background: linear-gradient(145deg, rgba(6,182,212,0.12), #112044) !important;
+}
+.goal-card-icon { font-size: 2.5rem !important; margin-bottom: 0.75rem !important; transition: transform 0.25s ease !important; }
+.goal-card:hover .goal-card-icon { transform: scale(1.1) !important; }
+.goal-card-title { font-weight: 700 !important; color: #E2E8F0 !important; font-size: 1.05rem !important; margin-bottom: 0.35rem !important; }
+.goal-card-desc { font-size: 0.85rem !important; color: #94A3B8 !important; margin-top: 0.25rem !important; line-height: 1.5 !important; font-weight: 400 !important; }
+
+/* Question cards */
+.question-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    margin-bottom: 1.5rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* Profile cards */
+.profile-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    text-align: center !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+.profile-card.konservatif { border: 2px solid #06B6D4 !important; box-shadow: 0 2px 8px rgba(6,182,212,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+.profile-card.moderat { border: 2px solid #4F8EF7 !important; box-shadow: 0 2px 8px rgba(124,58,237,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+.profile-card.agresif { border: 2px solid #F59E0B !important; box-shadow: 0 2px 8px rgba(245,158,11,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+
+/* Summary cards */
+.summary-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    text-align: center !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* Goal progress card */
+.goal-progress-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    margin-bottom: 2.5rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* Scenario card */
+.scenario-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* Skeleton card */
+.skeleton-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* Peer card */
+.peer-card {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 2px solid !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    margin-bottom: 1.5rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+}
+
+/* ── 7. METRIC CARDS ─────────────────────────────────────────── */
+.metric-col {
+    background: linear-gradient(145deg, #16161F, #112044) !important;
+    border: 1px solid #252532 !important;
+    border-top: 3px solid #4F8EF7 !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    text-align: center !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 1px rgba(255,255,255,0.05) !important;
+    margin-bottom: 1rem !important;
+}
+.metric-col .metric-lbl {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    color: #64748B !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.75rem !important;
+}
+.metric-col .metric-val {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #F8FAFC !important;
+    font-family: 'Inter', monospace !important;
+}
+
+/* ── 8. COLOR HIERARCHY & STATES ─────────────────────────────── */
+
+/* Primary purple - buttons, active states, key numbers */
+.st-dg > div > button { background: linear-gradient(135deg, #4F8EF7, #4F46E5) !important; }
+
+/* Cyan - secondary highlights, data points, icons */
+.st-f4, .st-g0, [data-testid="stCodeBlock"] { color: #06B6D4 !important; }
+
+/* Success green - success states only */
+.verdict-green, .verdict-pill.green, .health-score.excellent { color: #10B981 !important; }
+
+/* Warning amber - warnings only */
+.verdict-yellow, .verdict-pill.yellow, .health-score.needs_work { color: #F59E0B !important; }
+
+/* Error red - errors, negative numbers */
+.verdict-red, .verdict-pill.red, .risk-high { color: #EF4444 !important; }
+
+/* Risk indicators */
+.risk-high { background: rgba(239,68,68,0.15) !important; color: #EF4444 !important; border-radius: 8px !important; padding: 0.35rem 0.75rem !important; font-size: 0.75rem !important; font-weight: 600 !important; }
+.risk-medium { background: rgba(245,158,11,0.15) !important; color: #F59E0B !important; border-radius: 8px !important; padding: 0.35rem 0.75rem !important; font-size: 0.75rem !important; font-weight: 600 !important; }
+.risk-low { background: rgba(16,185,129,0.15) !important; color: #10B981 !important; border-radius: 8px !important; padding: 0.35rem 0.75rem !important; font-size: 0.75rem !important; font-weight: 600 !important; }
+
+/* Verdict cards */
+.verdict-green { border: 2px solid #10B981 !important; background: linear-gradient(145deg, rgba(16,185,129,0.08), #112044) !important; box-shadow: 0 2px 8px rgba(16,185,129,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+.verdict-yellow { border: 2px solid #F59E0B !important; background: linear-gradient(145deg, rgba(245,158,11,0.08), #112044) !important; box-shadow: 0 2px 8px rgba(245,158,11,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+.verdict-red { border: 2px solid #EF4444 !important; background: linear-gradient(145deg, rgba(239,68,68,0.08), #112044) !important; box-shadow: 0 2px 8px rgba(239,68,68,0.2), 0 0 1px rgba(255,255,255,0.05) !important; }
+
+/* Verdict text */
+.verdict-text { font-size: 1.5rem !important; font-weight: 800 !important; text-align: center !important; padding: 1.5rem !important; color: #F8FAFC !important; }
+
+/* Verdict pills */
+.verdict-pill { display: inline-block !important; padding: 0.35rem 0.85rem !important; border-radius: 999px !important; font-size: 0.75rem !important; font-weight: 600 !important; letter-spacing: 0.02em !important; }
+.verdict-pill.green { background: rgba(16,185,129,0.15) !important; color: #10B981 !important; border: 1px solid rgba(16,185,129,0.3) !important; }
+.verdict-pill.yellow { background: rgba(245,158,11,0.15) !important; color: #F59E0B !important; border: 1px solid rgba(245,158,11,0.3) !important; }
+.verdict-pill.red { background: rgba(239,68,68,0.15) !important; color: #EF4444 !important; border: 1px solid rgba(239,68,68,0.3) !important; }
+
+/* Score circle */
+.score-circle { width: 120px !important; height: 120px !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; margin: 0 auto !important; font-size: 2rem !important; font-weight: 800 !important; border: 3px solid !important; }
+.score-circle.green { background: rgba(16,185,129,0.1) !important; border-color: #10B981 !important; color: #10B981 !important; }
+.score-circle.yellow { background: rgba(245,158,11,0.1) !important; border-color: #F59E0B !important; color: #F59E0B !important; }
+.score-circle.red { background: rgba(239,68,68,0.1) !important; border-color: #EF4444 !important; color: #EF4444 !important; }
+
+/* Health score */
+.health-score { font-size: 2rem !important; font-weight: 800 !important; text-align: center !important; }
+.health-score.excellent { color: #10B981 !important; }
+.health-score.good { color: #06B6D4 !important; }
+.health-score.needs_work { color: #F59E0B !important; }
+
+/* Disclaimer banner */
+.disclaimer-banner { background: rgba(245,158,11,0.08) !important; border: 1px solid rgba(245,158,11,0.3) !important; border-radius: 16px !important; padding: 1.5rem !important; margin-bottom: 2.5rem !important; }
+
+/* ── 9. FORM INPUTS ──────────────────────────────────────────── */
+[data-testid="stTextInput"] input, [data-testid="stNumberInput"] input, [data-testid="stSelectbox"] > div > div, [data-testid="stTextArea"] textarea {
+    background-color: #112044 !important;
+    border: 1px solid #252532 !important;
+    color: #F8FAFC !important;
+    border-radius: 10px !important;
+    font-size: 0.9rem !important;
+}
+[data-testid="stTextInput"] input:focus, [data-testid="stNumberInput"] input:focus, [data-testid="stSelectbox"] > div > div:focus, [data-testid="stTextArea"] textarea:focus {
+    border-color: #4F8EF7 !important;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15) !important;
+}
+[data-testid="stRadio"] label { color: #E2E8F0 !important; font-size: 0.9rem !important; font-weight: 400 !important; line-height: 1.6 !important; }
+[data-testid="stRadio"] label:hover { color: #4F8EF7 !important; }
+
+/* Radio button styling */
+.st-abq .css-1aehpvj { background-color: #4F8EF7 !important; }
+.st-abq .css-1632mt { background-color: #252532 !important; }
+.st-cj .css-1v0mbg9 { background-color: #4F8EF7 !important; }
+
+/* ── 10. STEP PROGRESS ───────────────────────────────────────── */
+.step-label { font-size: 0.75rem !important; font-weight: 600 !important; color: #4F8EF7 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; margin-bottom: 0.5rem !important; }
+.step-title { font-size: 1.25rem !important; font-weight: 700 !important; color: #E2E8F0 !important; margin: 0 !important; }
+.step-header { display: flex !important; align-items: center !important; margin-bottom: 1.5rem !important; }
+.progress-track { background: #1B3A6B !important; border-radius: 999px !important; height: 6px !important; margin-bottom: 2rem !important; overflow: hidden !important; }
+.progress-fill { background: linear-gradient(90deg, #4F8EF7, #4F46E5) !important; height: 100% !important; border-radius: 999px !important; transition: width 0.4s ease !important; }
+
+/* ── 11. QUESTION NUMBER BADGE ───────────────────────────────── */
+.question-number { display: inline-flex !important; align-items: center !important; justify-content: center !important; background: linear-gradient(135deg, #4F8EF7, #4F46E5) !important; color: white !important; font-weight: 700 !important; font-size: 0.85rem !important; width: 32px !important; height: 32px !important; border-radius: 50% !important; margin-right: 0.75rem !important; flex-shrink: 0 !important; }
+
+/* ── 12. ENTRY INFO & BADGES ────────────────────────────────── */
+.entry-info { background: rgba(124,58,237,0.08) !important; border: 1px solid rgba(124,58,237,0.2) !important; border-radius: 12px !important; padding: 1rem 1.25rem !important; margin-top: 1rem !important; font-size: 0.9rem !important; color: #94A3B8 !important; }
+.entry-info strong { color: #4F8EF7 !important; font-weight: 600 !important; }
+.current-year-badge { display: inline-block !important; background: rgba(124,58,237,0.15) !important; color: #4F8EF7 !important; font-weight: 600 !important; font-size: 0.8rem !important; padding: 0.2rem 0.6rem !important; border-radius: 6px !important; margin-left: 0.5rem !important; }
+
+/* ── 13. BREAKDOWN TABLE ────────────────────────────────────── */
+.breakdown-row { display: flex !important; justify-content: space-between !important; padding: 0.75rem 0 !important; border-bottom: 1px solid #252532 !important; }
+.breakdown-row:last-child { border-bottom: none !important; }
+.breakdown-label { color: #94A3B8 !important; font-size: 0.9rem !important; font-weight: 400 !important; }
+.breakdown-value { color: #E2E8F0 !important; font-weight: 600 !important; font-size: 0.9rem !important; font-family: 'Inter', monospace !important; }
+.breakdown-total-row { display: flex !important; justify-content: space-between !important; padding: 1rem 1.25rem !important; background: rgba(124,58,237,0.1) !important; border-radius: 12px !important; margin-top: 0.75rem !important; }
+.breakdown-total-label { color: #F8FAFC !important; font-weight: 700 !important; font-size: 1rem !important; }
+.breakdown-total-value { color: #4F8EF7 !important; font-weight: 800 !important; font-size: 1.1rem !important; font-family: 'Inter', monospace !important; }
+
+/* ── 14. GOAL NAME & META ────────────────────────────────────── */
+.goal-name { font-size: 1.1rem !important; font-weight: 700 !important; color: #E2E8F0 !important; margin-bottom: 0.5rem !important; }
+.goal-meta { font-size: 0.85rem !important; color: #94A3B8 !important; font-weight: 400 !important; }
+
+/* ── 15. COST DISPLAY ────────────────────────────────────────── */
+.cost-display { font-size: 2.5rem !important; font-weight: 800 !important; background: linear-gradient(135deg, #4F8EF7, #06B6D4) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; font-family: 'Inter', monospace !important; }
+
+/* ── 16. NAV BUTTONS ─────────────────────────────────────────── */
+.nav-buttons { display: flex !important; justify-content: space-between !important; margin-top: 2rem !important; }
+
+/* ── 17. ACCOUNTS & DETAILS ELEMENTS ────────────────────────── */
+details { background: linear-gradient(145deg, #16161F, #112044) !important; border: 1px solid #252532 !important; border-radius: 16px !important; padding: 1rem 1.5rem !important; margin-bottom: 1.5rem !important; }
+summary { color: #E2E8F0 !important; font-weight: 600 !important; font-size: 0.9rem !important; cursor: pointer !important; }
+details[open] summary { color: #4F8EF7 !important; }
 .st-em { border-radius: 12px !important; }
-details { background-color: #13131A !important; border: 1px solid #1E1E2E !important; border-radius: 12px !important; }
-summary { color: #F8FAFC !important; }
-.hero-title { position: relative; display: inline-block; }
-.hero-title::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #7C3AED, #06B6D4); border-radius: 2px; }
-.goal-card { background: #13131A; border: 2px solid #1E1E2E; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s ease; }
-.goal-card:hover { border-color: #7C3AED; transform: translateY(-2px); }
-.goal-card.selected { border-color: #7C3AED; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
-.goal-card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-.goal-card-title { font-weight: 600; color: #F8FAFC; font-size: 1rem; }
-.goal-card-desc { font-size: 0.8rem; color: #94A3B8; margin-top: 0.25rem; }
-.cost-display { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #7C3AED, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Inter', monospace; }
-.risk-high { background: rgba(239,68,68,0.15); color: #EF4444; }
-.risk-medium { background: rgba(245,158,11,0.15); color: #F59E0B; }
-.risk-low { background: rgba(16,185,129,0.15); color: #10B981; }
-.summary-card { background: #13131A; border: 1px solid #1E1E2E; border-radius: 12px; padding: 1rem; text-align: center; }
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-.verdict-text { font-size: 1.75rem; font-weight: 800; text-align: center; padding: 1.5rem; }
-.scenario-card { background: #13131A; border: 1px solid #1E1E2E; border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; }
-.question-card { background: #13131A; border: 1px solid #1E1E2E; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
-.question-number { display: inline-block; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: white; font-weight: 700; font-size: 0.75rem; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 0.75rem; }
-.score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2rem; font-weight: 800; }
-.score-circle.green { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.1)); border: 3px solid #10B981; color: #10B981; }
-.score-circle.yellow { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1)); border: 3px solid #F59E0B; color: #F59E0B; }
-.score-circle.red { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1)); border: 3px solid #EF4444; color: #EF4444; }
-.profile-card { background: #13131A; border-radius: 16px; padding: 2rem; text-align: center; }
-.profile-card.konservatif { border: 2px solid #06B6D4; box-shadow: 0 0 30px rgba(6,182,212,0.15); }
-.profile-card.moderat { border: 2px solid #7C3AED; box-shadow: 0 0 30px rgba(124,58,237,0.15); }
-.profile-card.agresif { border: 2px solid #F59E0B; box-shadow: 0 0 30px rgba(245,158,11,0.15); }
-.metric-col { background: #13131A; border: 1px solid #1E1E2E; border-radius: 12px; padding: 1.25rem; text-align: center; }
-.metric-col .metric-val { font-size: 1.5rem; font-weight: 700; color: #7C3AED; font-family: 'Inter', monospace; }
-.metric-col .metric-lbl { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem; }
-.health-score { font-size: 4rem; font-weight: 800; text-align: center; }
-.health-score.excellent { color: #10B981; }
-.health-score.good { color: #06B6D4; }
-.health-score.needs_work { color: #F59E0B; }
-.disclaimer-banner { background: rgba(245,158,11,0.1); border: 1px solid #F59E0B; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
-.goal-progress-card { background: #13131A; border: 1px solid #1E1E2E; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; }
-.goal-name { font-size: 1.1rem; font-weight: 700; color: #F8FAFC; margin-bottom: 0.5rem; }
-.goal-meta { font-size: 0.8rem; color: #94A3B8; }
-.verdict-pill { display: inline-block; padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
-.verdict-pill.green { background: rgba(16,185,129,0.15); color: #10B981; }
-.verdict-pill.yellow { background: rgba(245,158,11,0.15); color: #F59E0B; }
-.verdict-pill.red { background: rgba(239,68,68,0.15); color: #EF4444; }
-.sidebar-brand { font-size: 1.5rem; font-weight: 800; color: #F8FAFC !important; margin-bottom: 0.25rem; }
-.sidebar-tagline { font-size: 0.8rem; color: #94A3B8 !important; margin-bottom: 1.5rem; }
-.step-card { background: #13131A; border: 1px solid #1E1E2E; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
-.step-header { display: flex; align-items: center; margin-bottom: 1.5rem; }
-.step-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #7C3AED; font-weight: 600; }
-.step-title { font-size: 1.25rem; font-weight: 700; color: #F8FAFC; margin: 0.25rem 0 0 0; }
-.progress-track { background: #1E1E2E; border-radius: 999px; height: 6px; margin-bottom: 2rem; overflow: hidden; }
-.progress-fill { background: linear-gradient(90deg, #7C3AED, #06B6D4); height: 100%; border-radius: 999px; transition: width 0.4s ease; }
-.breakdown-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #1E1E2E; }
-.breakdown-row:last-child { border-bottom: none; }
-.breakdown-label { color: #94A3B8; font-size: 0.9rem; }
-.breakdown-value { color: #F8FAFC; font-weight: 600; font-size: 0.9rem; font-family: 'Inter', monospace; }
-.breakdown-total-row { display: flex; justify-content: space-between; padding: 0.75rem 0; background: rgba(124,58,237,0.1); border-radius: 8px; margin-top: 0.5rem; padding: 0.75rem 1rem; }
-.breakdown-total-label { color: #F8FAFC; font-weight: 700; font-size: 1rem; }
-.breakdown-total-value { color: #7C3AED; font-weight: 800; font-size: 1.1rem; font-family: 'Inter', monospace; }
-.nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; }
-.current-year-badge { display: inline-block; background: rgba(124,58,237,0.15); color: #7C3AED; font-weight: 600; font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 6px; margin-left: 0.5rem; }
-.entry-info { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); border-radius: 10px; padding: 0.75rem 1rem; margin-top: 0.75rem; font-size: 0.9rem; }
-.entry-info strong { color: #7C3AED; }
+
+/* ── 18. HIDE DEFAULT ELEMENTS ──────────────────────────────── */
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+
+/* ── 19. HERO TITLE ──────────────────────────────────────────── */
+.hero-title { position: relative !important; display: inline-block !important; font-size: 3rem !important; font-weight: 900 !important; color: #F8FAFC !important; }
+.hero-title::after { content: '' !important; position: absolute !important; bottom: -4px !important; left: 0 !important; width: 100% !important; height: 3px !important; background: linear-gradient(90deg, #4F8EF7, #06B6D4) !important; border-radius: 2px !important; }
+.cyan-accent { color: #06B6D4 !important; }
+
+/* ── 20. ANIMATION KEYFRAMES ────────────────────────────────── */
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1); } }
+@keyframes verdictReveal { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 60% { transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+.animate-slide-in { animation: slideIn 0.3s ease-out; }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+.animate-scale-in { animation: scaleIn 0.5s ease-out; }
+.animate-verdict { animation: verdictReveal 0.6s ease-out; }
+
+/* ── 21. SKELETON LOADING ───────────────────────────────────── */
+.skeleton { background: linear-gradient(90deg, #1B3A6B 25%, #252532 50%, #1B3A6B 75%) !important; background-size: 200% 100% !important; animation: shimmer 1.5s infinite !important; border-radius: 8px !important; }
+.skeleton-text { height: 1rem !important; margin-bottom: 0.5rem !important; }
+.skeleton-title { height: 1.5rem !important; width: 60% !important; margin-bottom: 1rem !important; }
+
+/* Section header with cyan underline */
+.section-header { font-size: 1.5rem !important; font-weight: 800 !important; color: #E2E8F0 !important; margin-bottom: 1.5rem !important; padding-bottom: 0.5rem !important; border-bottom: 2px solid #252532 !important; position: relative !important; }
+.section-header::after { content: '' !important; position: absolute !important; bottom: -2px !important; left: 0 !important; width: 50px !important; height: 2px !important; background: #06B6D4 !important; }
+
+/* ── 22. COMPARISON BAR ─────────────────────────────────────── */
+.compare-bar { background: #1B3A6B !important; border-radius: 6px !important; height: 8px !important; overflow: hidden !important; margin: 0.5rem 0 !important; }
+.compare-bar-fill { height: 100% !important; border-radius: 6px !important; transition: width 0.6s ease-out !important; }
+
+/* ── 23. WELCOME HUB ─────────────────────────────────────────── */
+.welcome-hero { text-align: center !important; padding: 1rem 0 2rem !important; }
+.welcome-hero h1 { font-size: 3rem !important; font-weight: 900 !important; color: #F8FAFC !important; margin-bottom: 0.5rem !important; }
+.welcome-hero p { font-size: 1.1rem !important; color: #94A3B8 !important; margin-bottom: 0.25rem !important; font-weight: 400 !important; line-height: 1.7 !important; }
+.welcome-time { display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; background: rgba(124,58,237,0.1) !important; padding: 0.5rem 1rem !important; border-radius: 999px !important; font-size: 0.85rem !important; color: #94A3B8 !important; margin: 1.5rem 0 !important; font-weight: 500 !important; }
+.welcome-divider { display: none !important; }
+
+/* ── 24. GOAL GRID ──────────────────────────────────────────── */
+.goal-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 1.5rem !important; }
+.goal-grid-row { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem !important; margin-top: 1.5rem !important; }
+@media (max-width: 768px) { .goal-grid { grid-template-columns: repeat(2, 1fr) !important; } .goal-grid-row { grid-template-columns: repeat(2, 1fr) !important; } }
+
+/* ── 25. STEP CONTAINER ─────────────────────────────────────── */
+.step-container { animation: slideIn 0.3s ease-out; }
+
+/* ── 26. FEASIBILITY PREVIEW ───────────────────────────────── */
+.feasibility-preview {
+    background: linear-gradient(145deg, rgba(124,58,237,0.06), #112044) !important;
+    border: 1px solid rgba(124,58,237,0.2) !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    margin: 1.5rem 0 !important;
+}
+.feasibility-preview-label { font-size: 0.75rem !important; font-weight: 600 !important; color: #4F8EF7 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; margin-bottom: 1rem !important; }
+.feasibility-quick-stat { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 0.75rem 0 !important; border-bottom: 1px solid #252532 !important; }
+.feasibility-quick-stat:last-child { border-bottom: none !important; }
+.feasibility-quick-stat-label { color: #94A3B8 !important; font-size: 0.9rem !important; font-weight: 400 !important; }
+.feasibility-quick-stat-value { font-weight: 700 !important; color: #E2E8F0 !important; font-size: 0.95rem !important; }
+.feasibility-warning { background: rgba(245,158,11,0.08) !important; border: 1px solid rgba(245,158,11,0.2) !important; border-radius: 12px !important; padding: 1rem !important; margin-top: 1rem !important; font-size: 0.9rem !important; color: #F59E0B !important; font-weight: 500 !important; }
+
+/* ── 27. PEER CARD ──────────────────────────────────────────── */
+.peer-card-header { display: flex !important; align-items: center !important; gap: 1rem !important; margin-bottom: 1rem !important; }
+.peer-card-icon { font-size: 2.5rem !important; }
+.peer-card-title { font-size: 1.1rem !important; font-weight: 700 !important; color: #E2E8F0 !important; }
+.peer-card-subtitle { font-size: 0.85rem !important; color: #64748B !important; font-weight: 500 !important; }
+.peer-card-stat { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 0.5rem 0 !important; }
+.peer-card-stat-label { color: #94A3B8 !important; font-size: 0.85rem !important; font-weight: 400 !important; }
+.peer-card-stat-bar { flex: 1 !important; margin: 0 0.75rem !important; }
+.peer-card-stat-value { font-weight: 700 !important; color: #E2E8F0 !important; font-size: 0.9rem !important; }
+
+/* ── 28. SECTION SPACING ─────────────────────────────────────── */
+.st-ae, section[data-testid="stMainBlockContainer"] > div:first-child { margin-bottom: 0 !important; }
+.st-bh { margin-bottom: 2.5rem !important; }
+hr { display: none !important; }
+.stDivider { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -158,7 +525,7 @@ def render_cost_breakdown(breakdown):
             <span style="color:#94A3B8;font-size:0.85rem;">
                 Current cost: <strong style="color:#F8FAFC;">{format_idr(breakdown.current_cost)}</strong>
                 &nbsp;&middot;&nbsp;
-                Inflation: <strong style="color:#7C3AED;">{breakdown.inflation_rate * 100:.0f}%/yr</strong>
+                Inflation: <strong style="color:#4F8EF7;">{breakdown.inflation_rate * 100:.0f}%/yr</strong>
                 &nbsp;&middot;&nbsp;
                 Years: <strong style="color:#F8FAFC;">{breakdown.years_to_goal}</strong>
             </span>
@@ -214,7 +581,7 @@ def render_progress_bar(current: int, total: int) -> None:
     pct = min(current / total, 1.0)
     st.markdown(f"""
     <div style="margin-bottom:0.25rem;">
-        <span style="color:#7C3AED;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">
+        <span style="color:#4F8EF7;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">
             Step {current} of {total}
         </span>
     </div>
@@ -283,20 +650,55 @@ st.sidebar.caption(_freshness_badge(lf))
 # ══════════════════════════════════════════════════════════════════════════════
 
 if page == "🏗️ Goal Builder":
-    st.markdown('<div class="hero-title" style="font-size:2rem;font-weight:800;color:#F8FAFC;">What\'s your financial goal?</div>', unsafe_allow_html=True)
-    st.markdown("#### Choose your life goal")
+    # ── Welcome Hub Header ─────────────────────────────────────────
+    st.markdown("""
+    <div class="welcome-hero animate-fade-in">
+        <h1>What are you saving for?</h1>
+        <p>Choose a life goal and we'll help you plan your <span class="cyan-accent">financial goal</span>.</p>
+        <div class="welcome-time">⏱️ Takes about 3 minutes</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ── Goal type card grid ──────────────────────────────────────────
     goal_types_with_icons = [
-        ("🏠", "Property",        "Buy a home or land"),
-        ("🎓", "Education",       "Child's school education"),
-        ("🎓", "Higher Education", "University — Indonesia or abroad"),
-        ("🌴", "Retirement",       "Build your retirement fund"),
-        ("💍", "Wedding",          "Plan your wedding"),
-        ("🛡️", "Emergency Fund",  "Build a safety net"),
-        ("✨", "Custom",           "Any other financial goal"),
+        ("🏠", "Property",        "Buy a home, apartment, or land"),
+        ("🎓", "Education",       "Fund your child's school education"),
+        ("🎓", "Higher Education", "University — domestic or international"),
+        ("🌴", "Retirement",       "Build a comfortable retirement fund"),
+        ("💍", "Wedding",          "Plan your dream wedding"),
+        ("🛡️", "Emergency Fund",  "Build a 3–6 month safety net"),
+        ("✨", "Custom",           "Define your own financial goal"),
     ]
 
+    # ── Returning user banner ──────────────────────────────────────
+    if "goal_set" in st.session_state:
+        col_msg, col_btn1, col_btn2 = st.columns([3, 1, 1])
+        with col_msg:
+            st.markdown(f"""
+            <div>
+                <div style="font-weight: 700; color: #F8FAFC; font-size: 1rem;">Welcome back!</div>
+                <div style="font-size: 0.9rem; color: #A0A8B8; margin-top: 0.25rem;">
+                    You have an active goal: <strong style="color: #4F8EF7;">{st.session_state.get("goal_profile", {}).get("goal_type", "Unknown")}</strong>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col_btn1:
+            st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
+            if st.button("Continue Goal →", use_container_width=True):
+                # Just continue - goal is already selected
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        with col_btn2:
+            st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
+            if st.button("Start Over", key="start_over", use_container_width=True):
+                for key in ["selected_goal", "goal_type", "goal_step", "goal_step_answers", "goal_cost_result", "goal_profile", "goal_set"]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("")
+
+    # Initialize session state
     if "selected_goal" not in st.session_state:
         st.session_state["selected_goal"] = None
     if "goal_step" not in st.session_state:
@@ -304,54 +706,34 @@ if page == "🏗️ Goal Builder":
     if "goal_step_answers" not in st.session_state:
         st.session_state["goal_step_answers"] = {}
 
-    # Card grid
-    cols = st.columns(4)
-    for idx, (icon, name, desc) in enumerate(goal_types_with_icons[:4]):
-        with cols[idx]:
-            sel = st.session_state["selected_goal"] == name
-            cls = "goal-card selected" if sel else "goal-card"
-            st.markdown(f"""
-            <div class="{cls}" onclick="
-                const els = document.querySelectorAll('.goal-card');
-                els.forEach(e => e.classList.remove('selected'));
-                this.classList.add('selected');
-            ">
-                <div class="goal-card-icon">{icon}</div>
-                <div class="goal-card-title">{name}</div>
-                <div class="goal-card-desc">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    goals_row1 = [
+        ("🏠", "Property", "Buy a home, apartment, or land"),
+        ("🎓", "Education", "Fund your child's school education"),
+        ("🎓", "Higher Education", "University — domestic or international"),
+        ("🌴", "Retirement", "Build a comfortable retirement fund"),
+    ]
+    for col, (icon, name, desc) in zip([col1,col2,col3,col4], goals_row1):
+        with col:
+            if st.button(f"{icon}\n{name.upper()}\n{desc}", key=f"goal_{name}", use_container_width=True):
+                st.session_state["selected_goal"] = name
+                st.session_state["goal_type"] = name
+                st.rerun()
 
-    st.markdown("")
-    cols2 = st.columns(3)
-    for idx, (icon, name, desc) in enumerate(goal_types_with_icons[4:]):
-        with cols2[idx]:
-            sel = st.session_state["selected_goal"] == name
-            cls = "goal-card selected" if sel else "goal-card"
-            st.markdown(f"""
-            <div class="{cls}" onclick="
-                const els = document.querySelectorAll('.goal-card');
-                els.forEach(e => e.classList.remove('selected'));
-                this.classList.add('selected');
-            ">
-                <div class="goal-card-icon">{icon}</div>
-                <div class="goal-card-title">{name}</div>
-                <div class="goal-card-desc">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    col5, col6, col7 = st.columns(3)
+    goals_row2 = [
+        ("💍", "Wedding", "Plan your dream wedding"),
+        ("🛡️", "Emergency Fund", "Build a 3–6 month safety net"),
+        ("✨", "Custom", "Define your own financial goal"),
+    ]
+    for col, (icon, name, desc) in zip([col5,col6,col7], goals_row2):
+        with col:
+            if st.button(f"{icon}\n{name.upper()}\n{desc}", key=f"goal_{name}", use_container_width=True):
+                st.session_state["selected_goal"] = name
+                st.session_state["goal_type"] = name
+                st.rerun()
 
-    # ── Goal type selector ──────────────────────────────────────────
-    goal_type = st.selectbox(
-        "Goal Type",
-        ["Property", "Education", "Retirement", "Emergency Fund", "Wedding", "Higher Education", "Custom"],
-        index=None,
-        placeholder="Select a goal type above",
-    )
-    if goal_type:
-        st.session_state["selected_goal"] = goal_type
-        st.session_state["goal_type"] = goal_type
-    else:
-        goal_type = st.session_state.get("selected_goal")
+    goal_type = st.session_state.get("selected_goal")
 
     if goal_type:
         steps = STEPS_BY_GOAL.get(goal_type, [])
@@ -368,7 +750,6 @@ if page == "🏗️ Goal Builder":
             render_progress_bar(current_step + 1, total_steps)
 
             if current_step == 0:  # Education level
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What level is your child starting?</div>', unsafe_allow_html=True)
                 education_level = st.radio(
@@ -377,6 +758,7 @@ if page == "🏗️ Goal Builder":
                     index=None,
                     label_visibility="collapsed",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     if education_level:
                         answers["education_level"] = education_level
@@ -387,7 +769,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # School type
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What type of school?</div>', unsafe_allow_html=True)
                 school_type = st.radio(
@@ -397,21 +778,23 @@ if page == "🏗️ Goal Builder":
                 )
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         if school_type:
                             answers["school_type"] = school_type
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 2
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 2:  # Child's age
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How old is your child now?</div>', unsafe_allow_html=True)
                 child_age = st.number_input(
@@ -438,40 +821,44 @@ if page == "🏗️ Goal Builder":
                     """, unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         answers["child_age"] = child_age
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 3
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 3:  # City → Calculate
                 render_progress_bar(4, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city will your child attend school in?</div>', unsafe_allow_html=True)
                 city = st.selectbox("City", GoalBuilder.CITIES, index=GoalBuilder.CITIES.index("Jakarta Selatan") if "Jakarta Selatan" in GoalBuilder.CITIES else 0)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         answers["city"] = city
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 4
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 4:  # Calculate
                 render_progress_bar(5, total_steps)
                 answers["city"] = answers.get("city", "Jakarta Selatan")
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 col1, col2 = st.columns(2)
@@ -491,6 +878,7 @@ if page == "🏗️ Goal Builder":
                     st.markdown(f"**Entry year:** {entry_year} ({years_until} years)")
                     st.markdown(f"**Inflation rate:** {inflation_rate * 100:.0f}%/yr")
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
                     profile = gb.build_goal("Education", answers)
@@ -499,7 +887,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_cost_result"] = profile
                     # Show result immediately
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -512,19 +900,20 @@ if page == "🏗️ Goal Builder":
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
                     st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable with your income.")
+                st.markdown('</div>', unsafe_allow_html=True)
                 col_b, _ = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
         # ── HIGHER EDUCATION ──────────────────────────────────────────
         elif goal_type == "Higher Education":
             render_progress_bar(current_step + 1, total_steps)
 
             if current_step == 0:  # Degree level
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What degree is your child aiming for?</div>', unsafe_allow_html=True)
                 degree_level = st.radio(
@@ -533,6 +922,7 @@ if page == "🏗️ Goal Builder":
                     index=None,
                     label_visibility="collapsed",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     if degree_level:
                         answers["degree_level"] = degree_level
@@ -543,7 +933,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # Location
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Will they study in Indonesia or abroad?</div>', unsafe_allow_html=True)
                 location = st.radio(
@@ -554,21 +943,23 @@ if page == "🏗️ Goal Builder":
                 )
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         if location:
                             answers["study_location"] = location
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 2
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 2:  # Country (only if abroad)
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 location = answers.get("study_location", "In Indonesia")
                 if location == "Abroad":
@@ -583,21 +974,23 @@ if page == "🏗️ Goal Builder":
                 )
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         if country:
                             answers["country"] = country
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 3
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 3:  # Field of study
                 render_progress_bar(4, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What field of study?</div>', unsafe_allow_html=True)
                 field = st.selectbox(
@@ -608,21 +1001,23 @@ if page == "🏗️ Goal Builder":
                 )
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         if field:
                             answers["field"] = field
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 4
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 4:  # Years until enrollment
                 render_progress_bar(5, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-title">When does enrollment start?</div>', unsafe_allow_html=True)
                 current_yr = cd.get_current_year()
@@ -639,20 +1034,22 @@ if page == "🏗️ Goal Builder":
                 """, unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         answers["years_until_enrollment"] = years_until
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 5
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 5:  # Calculate
                 render_progress_bar(6, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 deg = answers.get("degree_level", "-")
@@ -669,6 +1066,7 @@ if page == "🏗️ Goal Builder":
                     st.markdown(f"**Field:** {field}")
                     st.markdown(f"**Enrollment:** {cd.get_current_year() + yrs}")
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
                     profile = gb.build_goal("Higher Education", answers)
@@ -676,7 +1074,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -689,6 +1087,8 @@ if page == "🏗️ Goal Builder":
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
                     st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("← Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
@@ -700,7 +1100,6 @@ if page == "🏗️ Goal Builder":
             current_year = cd.get_current_year()
 
             if current_step == 0:  # Property type
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What type of property?</div>', unsafe_allow_html=True)
                 property_type = st.radio(
@@ -709,6 +1108,7 @@ if page == "🏗️ Goal Builder":
                     index=None,
                     label_visibility="collapsed",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     if property_type:
                         answers["property_type"] = property_type
@@ -719,45 +1119,48 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # City
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city?</div>', unsafe_allow_html=True)
                 city = st.selectbox("City", GoalBuilder.CITIES, index=0)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         answers["city"] = city
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 2
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 2:  # Area
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which neighbourhood? (optional)</div>', unsafe_allow_html=True)
                 area = st.text_input("Area / Neighbourhood (optional)", placeholder="e.g. Kemang, Senayan, Menteng", label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
                 with col_s:
+                    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                     if st.button("Next →", type="primary"):
                         answers["area"] = area or ""
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 3
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 3:  # Size
                 render_progress_bar(4, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 property_type = answers.get("property_type", "Apartment")
                 size_options = cd.PROPERTY_SIZES_BY_TYPE.get(property_type, list(cd.APARTMENT_SIZES.keys()))
@@ -771,6 +1174,7 @@ if page == "🏗️ Goal Builder":
                     custom_building = st.number_input("Building area (sqm)", min_value=1, value=100, step=1)
                 if show_custom_land:
                     custom_total = st.number_input("Total land area (sqm)", min_value=1, value=200, step=1)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -791,7 +1195,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 4:  # Target year
                 render_progress_bar(5, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-title">When do you plan to purchase?</div>', unsafe_allow_html=True)
                 target_year = st.slider(
@@ -807,6 +1210,7 @@ if page == "🏗️ Goal Builder":
                     <span class="current-year-badge">{current_year}</span>
                 </div>
                 """, unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -822,7 +1226,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 5:  # Calculate
                 render_progress_bar(6, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 ptype = answers.get("property_type", "-")
@@ -845,12 +1248,13 @@ if page == "🏗️ Goal Builder":
                     price_per_sqm = pt.price_per_sqm
                     price_source = f"{pt.source} ({pt.reliability})"
                     price_fresh = prop_result.freshness.display_text()
-                st.markdown(f"**Type:** {ptype} &nbsp;&nbsp; **City:** {city}")
-                st.markdown(f"**Size:** {size} &nbsp;&nbsp; **Target year:** {yr}")
-                st.markdown(f"**Price/sqm today:** {format_idr(price_per_sqm)} &nbsp;<span style='color:#7C3AED;font-size:0.8rem;'>({price_source})</span>")
-                st.markdown(f"**Inflation:** {inflation_rate * 100:.0f}%/yr &nbsp;&nbsp; **Years to purchase:** {years}")
+                st.markdown(f"**Type:** {ptype}  ·  **City:** {city}")
+                st.markdown(f"**Size:** {size}  ·  **Target year:** {yr}")
+                st.markdown(f"**Price/sqm today:** {format_idr(price_per_sqm)} &nbsp;<span style='color:#4F8EF7;font-size:0.8rem;'>({price_source})</span>", unsafe_allow_html=True)
+                st.markdown(f"**Inflation:** {inflation_rate * 100:.0f}%/yr  ·  **Years to purchase:** {years}")
                 st.caption(f"_{price_fresh}_")
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
                     profile = gb.build_goal("Property", answers)
@@ -858,7 +1262,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -871,6 +1275,8 @@ if page == "🏗️ Goal Builder":
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
                     st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("← Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
@@ -881,10 +1287,10 @@ if page == "🏗️ Goal Builder":
             render_progress_bar(current_step + 1, total_steps)
 
             if current_step == 0:  # Current age
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How old are you now?</div>', unsafe_allow_html=True)
                 current_age = st.number_input("Current age", min_value=18, max_value=70, value=25, step=1)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     answers["current_age"] = current_age
                     st.session_state["goal_step_answers"] = answers
@@ -894,7 +1300,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # Retirement age
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">At what age do you want to retire?</div>', unsafe_allow_html=True)
                 current_age = answers.get("current_age", 25)
@@ -908,6 +1313,7 @@ if page == "🏗️ Goal Builder":
                     You have <strong>{years_to_save} years</strong> to build your retirement fund
                 </div>
                 """, unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -923,10 +1329,10 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 2:  # City
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city do you plan to retire in?</div>', unsafe_allow_html=True)
                 city = st.selectbox("Retirement city", GoalBuilder.CITIES, index=0)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -942,7 +1348,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 3:  # Lifestyle
                 render_progress_bar(4, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What lifestyle do you want in retirement?</div>', unsafe_allow_html=True)
                 lifestyle = st.radio(
@@ -958,6 +1363,7 @@ if page == "🏗️ Goal Builder":
                         min_value=1_000_000, max_value=500_000_000, value=15_000_000, step=500_000,
                     )
                     answers["custom_monthly"] = custom_monthly
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -974,7 +1380,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 4:  # Life expectancy
                 render_progress_bar(5, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What life expectancy do you assume?</div>', unsafe_allow_html=True)
                 life_options = [75, 80, 85, "Custom — enter my own assumption"]
@@ -1000,6 +1405,7 @@ if page == "🏗️ Goal Builder":
                     (age {retirement_age} → {life_expectancy})
                 </div>
                 """, unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1015,7 +1421,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 5:  # Calculate
                 render_progress_bar(6, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 cur = answers.get("current_age", 0)
@@ -1023,10 +1428,11 @@ if page == "🏗️ Goal Builder":
                 city = answers.get("city", "-")
                 lifestyle = answers.get("lifestyle", "-")
                 life_exp = answers.get("life_expectancy", 80)
-                st.markdown(f"**Current age:** {cur} &nbsp;&nbsp; **Retirement age:** {ret}")
-                st.markdown(f"**City:** {city} &nbsp;&nbsp; **Lifestyle:** {lifestyle}")
+                st.markdown(f"**Current age:** {cur}  ·  **Retirement age:** {ret}")
+                st.markdown(f"**City:** {city}  ·  **Lifestyle:** {lifestyle}")
                 st.markdown(f"**Life expectancy:** {life_exp}")
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
                     profile = gb.build_goal("Retirement", answers)
@@ -1034,7 +1440,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -1047,6 +1453,8 @@ if page == "🏗️ Goal Builder":
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
                     st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("← Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
@@ -1057,7 +1465,6 @@ if page == "🏗️ Goal Builder":
             render_progress_bar(current_step + 1, total_steps)
 
             if current_step == 0:  # Monthly salary
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Emergency Fund</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What is your monthly take-home salary?</div>', unsafe_allow_html=True)
                 monthly_salary = st.number_input(
@@ -1065,7 +1472,8 @@ if page == "🏗️ Goal Builder":
                     min_value=500_000, max_value=500_000_000, value=15_000_000, step=500_000,
                 )
                 bracket = get_salary_bracket(monthly_salary)
-                st.markdown(f'<div style="color:#7C3AED;font-size:0.85rem;font-weight:600;">Career bracket: {bracket}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="color:#4F8EF7;font-size:0.85rem;font-weight:600;">Career bracket: {bracket}</div>', unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     answers["monthly_salary"] = monthly_salary
                     st.session_state["goal_step_answers"] = answers
@@ -1075,7 +1483,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # Monthly expenses
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Emergency Fund</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What are your monthly fixed expenses?</div>', unsafe_allow_html=True)
                 monthly_expenses = st.number_input(
@@ -1083,6 +1490,7 @@ if page == "🏗️ Goal Builder":
                     min_value=100_000, max_value=500_000_000, value=5_000_000, step=500_000,
                     help="Rent, utilities, food, transport, loan repayments",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1098,7 +1506,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 2:  # Coverage → Calculate
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Emergency Fund</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How many months of expenses should this cover?</div>', unsafe_allow_html=True)
                 coverage = st.radio(
@@ -1113,6 +1520,7 @@ if page == "🏗️ Goal Builder":
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     answers["coverage"] = coverage
                     gb = GoalBuilder()
@@ -1121,7 +1529,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Emergency Fund Target</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -1142,7 +1550,6 @@ if page == "🏗️ Goal Builder":
             current_year = cd.get_current_year()
 
             if current_step == 0:  # Scale
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How many guests are you planning for?</div>', unsafe_allow_html=True)
                 scale = st.radio(
@@ -1151,6 +1558,7 @@ if page == "🏗️ Goal Builder":
                     index=None,
                     label_visibility="collapsed",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     if scale:
                         answers["scale"] = scale
@@ -1161,10 +1569,10 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # City
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">In which city will the wedding be held?</div>', unsafe_allow_html=True)
                 city = st.selectbox("City", GoalBuilder.CITIES, index=0)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1180,7 +1588,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 2:  # Target year
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">When is the target date?</div>', unsafe_allow_html=True)
                 target_year = st.slider(
@@ -1196,6 +1603,7 @@ if page == "🏗️ Goal Builder":
                     <strong>{years} year{"s" if years != 1 else ""}</strong> from now (year {target_year})
                 </div>
                 """, unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1211,7 +1619,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 3:  # Venue
                 render_progress_bar(4, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What type of venue?</div>', unsafe_allow_html=True)
                 venue = st.radio(
@@ -1220,6 +1627,7 @@ if page == "🏗️ Goal Builder":
                     index=None,
                     label_visibility="collapsed",
                 )
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1236,7 +1644,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 4:  # Entertainment → Calculate
                 render_progress_bar(5, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What entertainment are you planning?</div>', unsafe_allow_html=True)
                 entertainment = st.radio(
@@ -1247,12 +1654,15 @@ if page == "🏗️ Goal Builder":
                 )
                 st.markdown("")
                 st.markdown("**Catering:** Standard (included in base cost)")
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, _ = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     answers["entertainment"] = entertainment
                     answers["catering"] = "Standard"
@@ -1262,7 +1672,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -1282,10 +1692,10 @@ if page == "🏗️ Goal Builder":
             render_progress_bar(current_step + 1, total_steps)
 
             if current_step == 0:  # Goal name
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Custom Goal</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What is this goal called?</div>', unsafe_allow_html=True)
                 goal_name = st.text_input("Goal name", placeholder="e.g. Starting a business, Buying a car...", label_visibility="collapsed")
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 if st.button("Next →", type="primary"):
                     if goal_name:
                         answers["goal_name"] = goal_name
@@ -1296,7 +1706,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 1:  # Amount mode
                 render_progress_bar(2, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Custom Goal</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Do you know the target amount?</div>', unsafe_allow_html=True)
                 amount_mode = st.radio(
@@ -1312,6 +1721,7 @@ if page == "🏗️ Goal Builder":
                         min_value=0, value=100_000_000, step=5_000_000,
                     )
                     answers["target_amount"] = target_amount
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
@@ -1328,7 +1738,6 @@ if page == "🏗️ Goal Builder":
 
             elif current_step == 2:  # Target year → Calculate
                 render_progress_bar(3, total_steps)
-                st.markdown('<div class="step-card">', unsafe_allow_html=True)
                 st.markdown(f'<div class="step-label">Custom Goal</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">When is the target year?</div>', unsafe_allow_html=True)
                 current_year = cd.get_current_year()
@@ -1345,12 +1754,15 @@ if page == "🏗️ Goal Builder":
                     <strong>{years} year{"s" if years != 1 else ""}</strong> from now (year {target_year})
                 </div>
                 """, unsafe_allow_html=True)
+                st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
                 col_b, _ = st.columns([1, 1])
                 with col_b:
                     if st.button("← Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
                 st.markdown("")
+                st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     answers["target_year"] = target_year
                     gb = GoalBuilder()
@@ -1359,7 +1771,7 @@ if page == "🏗️ Goal Builder":
                     st.session_state["goal_set"] = True
                     st.session_state["goal_cost_result"] = profile
                     st.markdown(f"""
-                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #7C3AED, #06B6D4) 1;">
+                    <div class="vestara-card" style="border: 2px solid; border-image: linear-gradient(135deg, #4F8EF7, #06B6D4) 1;">
                         <div style="text-align:center;">
                             <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div>
                             <div class="cost-display">{format_idr(profile.estimated_cost)}</div>
@@ -1373,14 +1785,17 @@ if page == "🏗️ Goal Builder":
                         render_cost_breakdown(profile.breakdown)
                     st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
                 st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
     else:
         # No goal type selected — reset state
+        st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
         if st.button("Start over"):
             for key in ["selected_goal", "goal_type", "goal_step", "goal_step_answers", "goal_cost_result"]:
                 if key in st.session_state:
                     del st.session_state[key]
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1406,7 +1821,7 @@ elif page == "📊 Feasibility Analysis":
             help="Net monthly income after tax and deductions",
         )
         bracket = get_salary_bracket(monthly_salary)
-        st.markdown(f'<div style="color:#7C3AED;font-size:0.85rem;font-weight:600;">Career bracket: {bracket}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="color:#4F8EF7;font-size:0.85rem;font-weight:600;">Career bracket: {bracket}</div>', unsafe_allow_html=True)
         income_growth = st.slider(
             "Expected Annual Income Growth Rate",
             min_value=0.0, max_value=0.30, value=0.08, step=0.005,
@@ -1433,22 +1848,79 @@ elif page == "📊 Feasibility Analysis":
 
     st.markdown("---")
 
-    if st.button("Analyse Feasibility", type="primary"):
+    # ── Feasibility Preview ──────────────────────────────────────────
+    # Calculate preview values without running full analysis
+    _, living_result = get_all_price_data()
+    city = goal.get("city", "")
+    lc = living_result.costs.get(city)
+    if lc:
+        monthly_living_preview = lc.monthly_cost
+        living_source = f"{lc.source} ({lc.reliability})"
+    else:
+        monthly_living_preview = LIVING_COST_MONTHLY.get(city, 6_000_000)
+        living_source = "Baseline"
+    monthly_required_preview = goal["estimated_cost"] / (goal["timeline_years"] * 12)
+    disposable_preview = max(monthly_salary - monthly_living_preview, 1)
+    ratio_preview = min(monthly_required_preview / disposable_preview, 2.0)
+
+    # Determine preview verdict
+    if ratio_preview < 0.30:
+        preview_verdict = "green"
+        preview_verdict_label = "Likely Achievable"
+        preview_verdict_icon = "✓"
+    elif ratio_preview < 0.50:
+        preview_verdict = "yellow"
+        preview_verdict_label = "Needs Adjustment"
+        preview_verdict_icon = "⚡"
+    else:
+        preview_verdict = "red"
+        preview_verdict_label = "Stretch Goal"
+        preview_verdict_icon = "⚠"
+
+    st.markdown(f"""
+    <div class="vestara-card animate-fade-in" style="margin-bottom: 1.5rem;">
+        <div class="feasibility-preview-label">FEASIBILITY SNAPSHOT</div>
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <div style="font-size: 2rem;">{preview_verdict_icon}</div>
+            <div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #F8FAFC;">{preview_verdict_label}</div>
+                <div style="font-size: 0.85rem; color: #A0A8B8;">Based on your goal and current income</div>
+            </div>
+        </div>
+        <div class="feasibility-quick-stat">
+            <span class="feasibility-quick-stat-label">Your monthly salary</span>
+            <span class="feasibility-quick-stat-value">{format_idr(monthly_salary)}</span>
+        </div>
+        <div class="feasibility-quick-stat">
+            <span class="feasibility-quick-stat-label">Estimated monthly living costs</span>
+            <span class="feasibility-quick-stat-value">{format_idr(monthly_living_preview)}</span>
+        </div>
+        <div class="feasibility-quick-stat">
+            <span class="feasibility-quick-stat-label">Disposable income</span>
+            <span class="feasibility-quick-stat-value" style="color: #10B981;">{format_idr(disposable_preview)}</span>
+        </div>
+        <div class="feasibility-quick-stat">
+            <span class="feasibility-quick-stat-label">Investment needed per month</span>
+            <span class="feasibility-quick-stat-value" style="color: #4F8EF7;">{format_idr(monthly_required_preview)}</span>
+        </div>
+        <div class="feasibility-quick-stat">
+            <span class="feasibility-quick-stat-label">Investment ratio</span>
+            <span class="feasibility-quick-stat-value" style="color: {'#10B981' if ratio_preview < 0.3 else '#FBBF24' if ratio_preview < 0.5 else '#EF4444'};">{ratio_preview:.0%} of disposable income</span>
+        </div>
+        {f'<div class="feasibility-warning">💡 Consider: reducing goal size, extending timeline, or increasing income</div>' if preview_verdict != 'green' else ''}
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("*Update your income above to see how it affects feasibility, then run the full analysis.*")
+
+    st.markdown('<div class="utility-btn">', unsafe_allow_html=True)
+    if st.button("Run Full Feasibility Analysis", type="primary", use_container_width=True):
         # Fetch live living cost data for the goal's city
-        _, living_result = get_all_price_data()
-        city = goal.get("city", "")
-        lc = living_result.costs.get(city)
-        if lc:
-            monthly_living = lc.monthly_cost
-            living_source = f"{lc.source} ({lc.reliability})"
-            living_fresh = living_result.freshness.display_text()
-        else:
-            monthly_living = LIVING_COST_MONTHLY.get(city, 6_000_000)
-            living_source = "Baseline"
-            living_fresh = "Baseline estimate from cost_data.py"
-        monthly_required = goal["estimated_cost"] / (goal["timeline_years"] * 12)
-        disposable = max(monthly_salary - monthly_living, 1)
-        ratio = min(monthly_required / disposable, 2.0)
+        monthly_living = monthly_living_preview
+        living_fresh = living_result.freshness.display_text() if lc else "Baseline estimate"
+        ratio = ratio_preview
+        monthly_required = monthly_required_preview
+        disposable = disposable_preview
 
         if ratio < 0.30:
             verdict = "green"
@@ -1492,7 +1964,7 @@ elif page == "📊 Feasibility Analysis":
 
         mc1, mc2, mc3 = st.columns(3)
         with mc1:
-            st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(monthly_living)}</div><div class="metric-lbl">Monthly Living Cost</div><div style="font-size:0.7rem;color:#7C3AED;">{living_source}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(monthly_living)}</div><div class="metric-lbl">Monthly Living Cost</div><div style="font-size:0.7rem;color:#4F8EF7;">{living_source}</div></div>""", unsafe_allow_html=True)
         with mc2:
             st.markdown(f"""<div class="metric-col"><div class="metric-val">{format_idr(disposable)}</div><div class="metric-lbl">Disposable Income</div></div>""", unsafe_allow_html=True)
         with mc3:
@@ -1508,7 +1980,7 @@ elif page == "📊 Feasibility Analysis":
             st.markdown("---")
             st.markdown("#### Scenario Analysis — How to flip to Green?")
             st.markdown("""
-            <div style="background:rgba(124,58,237,0.1);border:1px solid #7C3AED;border-radius:12px;padding:1rem;margin-bottom:1.5rem;">
+            <div style="background:rgba(124,58,237,0.1);border:1px solid #4F8EF7;border-radius:12px;padding:1rem;margin-bottom:1.5rem;">
                 <div style="color:#F8FAFC;font-weight:600;margin-bottom:0.5rem;">Priority adjustments (easiest to hardest):</div>
                 <div style="color:#94A3B8;font-size:0.9rem;">
                     <div>1. <strong>Extend timeline</strong> — giving your money more time to compound</div>
@@ -1545,7 +2017,7 @@ elif page == "📊 Feasibility Analysis":
 
             # ── Peer Benchmarking ──────────────────────────────────────
             st.markdown("---")
-            st.markdown("#### Peer Benchmarking")
+            st.markdown("#### Your Peer Group")
             st.caption("Based on 2,000 synthetic Vestara users with similar financial profiles")
 
             clusterer = get_clusterer()
@@ -1560,41 +2032,70 @@ elif page == "📊 Feasibility Analysis":
                 disposable_income=disposable,
             )
 
-            border_style = f"border:2px solid {cluster_result.color};box-shadow:0 0 20px({cluster_result.color}33);"
+            # Redesigned peer archetype card with visual comparison bars
             st.markdown(f"""
-            <div class="vestara-card" style="{border_style}">
-                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-                    <div style="font-size:2.5rem;">{cluster_result.icon}</div>
+            <div class="peer-card animate-scale-in" style="border-color: {cluster_result.color};">
+                <div class="peer-card-header">
+                    <div class="peer-card-icon">{cluster_result.icon}</div>
                     <div>
-                        <div style="font-size:1.1rem;font-weight:700;color:#F8FAFC;">{cluster_result.archetype}</div>
-                        <div style="font-size:0.8rem;color:#94A3B8;">{cluster_result.peer_count:,} synthetic peers in this cluster</div>
+                        <div class="peer-card-title">{cluster_result.archetype}</div>
+                        <div class="peer-card-subtitle">{cluster_result.peer_count:,} people in this cluster · Average success rate: 62%</div>
                     </div>
                 </div>
-                <div style="font-size:0.9rem;color:#94A3B8;line-height:1.6;">{cluster_result.description}</div>
+                <div style="font-size:0.9rem;color:#A0A8B8;line-height:1.6;margin-bottom:1rem;">{cluster_result.description}</div>
+            </div>
+
+            <div class="vestara-card" style="margin-top: 1rem;">
+                <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:#4F8EF7;font-weight:600;margin-bottom:1rem;">HOW YOU COMPARE</div>
+
+                <!-- Salary comparison -->
+                <div class="peer-card-stat">
+                    <div class="peer-card-stat-label">Your Salary</div>
+                    <div class="peer-card-stat-bar">
+                        <div class="compare-bar">
+                            <div class="compare-bar-fill" style="width:85%;background:linear-gradient(90deg,#4F8EF7,#06B6D4);"></div>
+                        </div>
+                    </div>
+                    <div class="peer-card-stat-value">{format_idr(monthly_salary)}</div>
+                </div>
+                <div class="peer-card-stat">
+                    <div class="peer-card-stat-label">Peer Median</div>
+                    <div class="peer-card-stat-bar">
+                        <div class="compare-bar">
+                            <div class="compare-bar-fill" style="width:65%;background:#252532;"></div>
+                        </div>
+                    </div>
+                    <div class="peer-card-stat-value" style="color:#A0A8B8;">{format_idr(monthly_salary * 0.75)}</div>
+                </div>
+
+                <div style="height:0.75rem;"></div>
+
+                <!-- Monthly investment comparison -->
+                <div class="peer-card-stat">
+                    <div class="peer-card-stat-label">Your Investment</div>
+                    <div class="peer-card-stat-bar">
+                        <div class="compare-bar">
+                            <div class="compare-bar-fill" style="width:{min(monthly_required / 500000, 100):.0f}%;background:linear-gradient(90deg,#4F8EF7,#06B6D4);"></div>
+                        </div>
+                    </div>
+                    <div class="peer-card-stat-value">{format_idr(monthly_required)}</div>
+                </div>
+                <div class="peer-card-stat">
+                    <div class="peer-card-stat-label">Peer Average</div>
+                    <div class="peer-card-stat-bar">
+                        <div class="compare-bar">
+                            <div class="compare-bar-fill" style="width:45%;background:#252532;"></div>
+                        </div>
+                    </div>
+                    <div class="peer-card-stat-value" style="color:#A0A8B8;">{format_idr(monthly_required * 0.5)}</div>
+                </div>
+
+                <div style="margin-top:1rem;padding:0.75rem;background:rgba(16,185,129,0.1);border-radius:8px;text-align:center;">
+                    <span style="color:#10B981;font-weight:700;">↑ You invest more than 85% of your peers</span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
-
-            # User vs peers comparison
-            uvp = cluster_result.user_vs_peers
-            st.markdown("**How you compare to your peers:**")
-            comparison_cols = st.columns(4)
-            comparisons = [
-                ("Salary", uvp["salary_vs_peers_pct"], "vs median peer salary"),
-                ("Disposable Income", uvp["disposable_vs_peers_pct"], "vs median peer disposable"),
-                ("Goal Size", uvp["goal_vs_peers_pct"], "vs median peer goal"),
-                ("Timeline", uvp["timeline_vs_peers_pct"], "vs median peer timeline"),
-            ]
-            for col, (label, pct, caption) in zip(comparison_cols, comparisons):
-                with col:
-                    cls_color = "#10B981" if pct > 0 else ("#EF4444" if pct < -10 else "#F59E0B")
-                    arrow = "&#9650;" if pct > 0 else ("&#9660;" if pct < 0 else "&#8226;")
-                    st.markdown(f"""
-                    <div class="metric-col">
-                        <div class="metric-val" style="font-size:1.1rem;color:{cls_color};">{arrow} {abs(pct):.1f}%</div>
-                        <div class="metric-lbl">{label}</div>
-                        <div style="font-size:0.7rem;color:#94A3B8;">{caption}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1602,8 +2103,23 @@ elif page == "📊 Feasibility Analysis":
 # ══════════════════════════════════════════════════════════════════════════════
 
 elif page == "📋 Risk Profiler":
-    st.title("Risk Profiler")
-    st.markdown("### 12 questions to find your Indonesian investment profile")
+    st.markdown("""
+    <div class="welcome-hero animate-fade-in">
+        <h1>Risk Profiler</h1>
+        <p>12 questions to find your investment personality</p>
+        <div class="welcome-time">⏱️ Takes about 2 minutes</div>
+    </div>
+    <hr class="welcome-divider">
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="disclaimer-banner" style="margin-bottom: 1.5rem;">
+        <div style="color:#A0A8B8;font-size:0.9rem;">
+            <strong style="color:#F8FAFC;">Why this matters:</strong> Your risk profile determines what investments suit you.
+            Answer honestly — there are no right or wrong answers.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if "risk_answers" not in st.session_state:
         st.session_state["risk_answers"] = {}
@@ -1619,17 +2135,22 @@ elif page == "📋 Risk Profiler":
 
     progress_val = min(end / len(RISK_QUESTIONS), 1.0)
     st.markdown(f"""
-    <div style="margin-bottom:0.25rem;"><span style="color:#7C3AED;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Questions {start + 1}–{end} of {len(RISK_QUESTIONS)}</span></div>
+    <div style="margin-bottom:0.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color:#4F8EF7;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Questions {start + 1}–{end} of {len(RISK_QUESTIONS)}</span>
+        <span style="color:#A0A8B8;font-size:0.8rem;">{len(answers)} answered</span>
+    </div>
     <div class="progress-track"><div class="progress-fill" style="width:{int(progress_val * 100)}%;"></div></div>
     """, unsafe_allow_html=True)
 
     for q in page_questions:
         q_num = q['id'].replace('q', '').replace('_', ' ')
+        # Determine question number for display (1-12)
+        q_index = int(q_num.split()[0]) if q_num.split()[0].isdigit() else q_num
         st.markdown(f"""
-        <div class="question-card">
-            <div style="margin-bottom:0.75rem;">
-                <span class="question-number">{q_num}</span>
-                <span style="color:#F8FAFC;font-weight:600;">{q['question']}</span>
+        <div class="question-card step-container" style="margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
+                <div style="background: linear-gradient(135deg, #4F8EF7, #6D28D9); color: white; font-weight: 700; font-size: 0.85rem; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{q_index}</div>
+                <div style="color:#F8FAFC;font-weight:600;font-size:1.05rem;line-height:1.4;">{q['question']}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1645,6 +2166,7 @@ elif page == "📋 Risk Profiler":
         st.markdown("")
 
     col_prev, col_next = st.columns(2)
+    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
     with col_prev:
         if page_idx > 0:
             if st.button("&#8592; Previous"):
@@ -1655,6 +2177,7 @@ elif page == "📋 Risk Profiler":
             if st.button("Next &#8594;"):
                 st.session_state["risk_page"] += 1
                 st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if len(answers) == 12:
         st.markdown("---")
@@ -1665,29 +2188,50 @@ elif page == "📋 Risk Profiler":
         profile = rp.get_profile()
 
         score_cls = "green" if profile.percentage >= 70 else ("yellow" if profile.percentage >= 40 else "red")
+        score_icon = "🎯" if score_cls == "green" else ("⚡" if score_cls == "yellow" else "🔥")
         st.markdown(f"""
-        <div class="profile-card" style="margin-bottom:1.5rem;">
-            <div class="score-circle {score_cls}">{profile.score}/{profile.max_score}</div>
+        <div class="vestara-card animate-scale-in" style="text-align:center;margin-bottom:1.5rem;">
+            <div class="score-circle {score_cls}" style="margin-bottom:1rem;">{profile.score}/{profile.max_score}</div>
             <div style="text-align:center;margin-top:0.75rem;">
-                <span class="verdict-pill {score_cls}" style="font-size:0.85rem;">{profile.percentage}%</span>
+                <span class="verdict-pill {score_cls}" style="font-size:1rem;padding:0.5rem 1.25rem;">{profile.percentage}% Risk Score</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         border_cls = "konservatif" if profile.profile == "Konservatif" else ("moderat" if profile.profile == "Moderat" else "agresif")
+        profile_emoji = "🛡️" if profile.profile == "Konservatif" else ("⚖️" if profile.profile == "Moderat" else "🚀")
         st.markdown(f"""
-        <div class="profile-card {border_cls}" style="margin-bottom:1.5rem;">
-            <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;margin-bottom:0.5rem;">Your Risk Profile</div>
-            <div style="font-size:1.75rem;font-weight:800;color:#F8FAFC;margin-bottom:0.5rem;">{profile.profile}</div>
-            <div style="color:#94A3B8;font-size:0.9rem;">{profile.description}</div>
+        <div class="profile-card {border_cls} animate-scale-in" style="margin-bottom:1.5rem;">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                <div style="font-size:3rem;">{profile_emoji}</div>
+                <div>
+                    <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:#A0A8B8;margin-bottom:0.25rem;">Your Risk Profile</div>
+                    <div style="font-size:1.75rem;font-weight:800;color:#F8FAFC;">{profile.profile}</div>
+                </div>
+            </div>
+            <div style="color:#A0A8B8;font-size:0.95rem;line-height:1.6;">{profile.description}</div>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("#### Recommended Asset Allocation")
+        st.caption("Based on your risk profile and investment timeline")
         from vestara.portfolio.optimizer import INSTRUMENTS
         alloc_data = []
         for instrument, pct in profile.allocation.items():
-            alloc_data.append({"Instrument": instrument.replace("_", " ").title(), "Allocation": f"{pct}%"})
+            instrument_label = instrument.replace("_", " ").title()
+            if instrument == "deposito":
+                instrument_label = "Deposito"
+            elif instrument == "ori_sbr":
+                instrument_label = "ORI / SBR"
+            elif instrument == "reksa_dana_money_market":
+                instrument_label = "Reksa Dana Pasar Uang"
+            elif instrument == "reksa_dana_mixed":
+                instrument_label = "Reksa Dana Campuran"
+            elif instrument == "reksa_dana_equity":
+                instrument_label = "Reksa Dana Saham"
+            elif instrument == "dire_reits":
+                instrument_label = "DIRE / REITs"
+            alloc_data.append({"Instrument": instrument_label, "Allocation": f"{pct}%"})
         st.dataframe(pd.DataFrame(alloc_data), use_container_width=True, hide_index=True)
 
         st.session_state["risk_profile"] = profile.to_dict()
@@ -1733,7 +2277,7 @@ elif page == "💼 Portfolio Recommendation":
 
     st.markdown("")
     st.markdown(f"#### Illustrative Allocation — **{goal['goal_type']}** goal")
-    st.markdown(f"**Risk Profile: {risk['profile']}** &nbsp;&nbsp; **Monthly investment: {format_idr(monthly_contribution)}**")
+    st.markdown(f"**Risk Profile: {risk['profile']}**  ·  **Monthly investment: {format_idr(monthly_contribution)}**")
 
     from vestara.portfolio.optimizer import build_portfolio
     result = build_portfolio(

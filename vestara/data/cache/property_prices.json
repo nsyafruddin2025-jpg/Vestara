@@ -1,0 +1,167 @@
+{
+  "version": "1.0",
+  "fetched_at": "2026-04-29T19:55:59.551327",
+  "freshness": {
+    "status": "live",
+    "last_updated": "2026-04-29",
+    "source": "BPS",
+    "days_old": 0
+  },
+  "prices": {
+    "Jakarta Selatan": {
+      "price_per_sqm": 38500000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Jakarta Pusat": {
+      "price_per_sqm": 35200000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Jakarta Utara": {
+      "price_per_sqm": 26800000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Jakarta Timur": {
+      "price_per_sqm": 24000000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Jakarta Barat": {
+      "price_per_sqm": 29500000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Bandung": {
+      "price_per_sqm": 13200000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Surabaya": {
+      "price_per_sqm": 15400000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Yogyakarta": {
+      "price_per_sqm": 9800000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Medan": {
+      "price_per_sqm": 8500000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Bali (Denpasar)": {
+      "price_per_sqm": 21000000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Semarang": {
+      "price_per_sqm": 8000000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Makassar": {
+      "price_per_sqm": 10500000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    }
+  },
+  "jabo_prices": {
+    "Depok": {
+      "price_per_sqm": 17200000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Bekasi": {
+      "price_per_sqm": 18800000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Tangerang": {
+      "price_per_sqm": 21000000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Tangerang Selatan": {
+      "price_per_sqm": 24500000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Bogor": {
+      "price_per_sqm": 14200000,
+      "price_range_min": null,
+      "price_range_max": null,
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    }
+  }
+}
