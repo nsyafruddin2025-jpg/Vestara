@@ -1,148 +1,148 @@
 {
   "version": "1.0",
-  "fetched_at": "2026-04-29T19:19:23.079872",
+  "fetched_at": "2026-05-12T23:01:50.114976",
   "freshness": {
-    "status": "fallback",
-    "last_updated": "2026-04-01",
-    "source": "cost_data.py",
-    "days_old": 999
+    "status": "live",
+    "last_updated": "2026-05-12",
+    "source": "Numbeo",
+    "days_old": 0
   },
   "costs": {
     "Jakarta Selatan": {
-      "monthly_cost": 8500000,
+      "monthly_cost": 29055741,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Jakarta",
+      "reliability": "MEDIUM"
     },
     "Jakarta Pusat": {
-      "monthly_cost": 7500000,
+      "monthly_cost": 29055741,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Jakarta",
+      "reliability": "MEDIUM"
     },
     "Jakarta Utara": {
-      "monthly_cost": 6000000,
+      "monthly_cost": 29055741,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Bandung": {
-      "monthly_cost": 5000000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Surabaya": {
-      "monthly_cost": 5500000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Yogyakarta": {
-      "monthly_cost": 4000000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Medan": {
-      "monthly_cost": 3500000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Bali (Denpasar)": {
-      "monthly_cost": 6500000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Semarang": {
-      "monthly_cost": 3800000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
-    },
-    "Makassar": {
-      "monthly_cost": 4200000,
-      "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Jakarta",
+      "reliability": "MEDIUM"
     },
     "Jakarta Timur": {
-      "monthly_cost": 5500000,
+      "monthly_cost": 29055741,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Jakarta",
+      "reliability": "MEDIUM"
     },
     "Jakarta Barat": {
-      "monthly_cost": 6500000,
+      "monthly_cost": 29055741,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Jakarta",
+      "reliability": "MEDIUM"
+    },
+    "Bandung": {
+      "monthly_cost": 23495895,
+      "currency": "IDR",
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Bandung",
+      "reliability": "MEDIUM"
+    },
+    "Surabaya": {
+      "monthly_cost": 26009319,
+      "currency": "IDR",
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Surabaya",
+      "reliability": "MEDIUM"
+    },
+    "Yogyakarta": {
+      "monthly_cost": 25178526,
+      "currency": "IDR",
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Yogyakarta",
+      "reliability": "MEDIUM"
+    },
+    "Bali (Denpasar)": {
+      "monthly_cost": 26665529,
+      "currency": "IDR",
+      "last_updated": "2026-05-12",
+      "source": "Numbeo",
+      "source_url": "https://www.numbeo.com/cost-of-living/in/Denpasar",
+      "reliability": "MEDIUM"
+    },
+    "Medan": {
+      "monthly_cost": 3400000,
+      "currency": "IDR",
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Semarang": {
+      "monthly_cost": 3600000,
+      "currency": "IDR",
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
+    },
+    "Makassar": {
+      "monthly_cost": 4000000,
+      "currency": "IDR",
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     },
     "Depok": {
-      "monthly_cost": 4500000,
+      "monthly_cost": 4300000,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     },
     "Bekasi": {
-      "monthly_cost": 4800000,
+      "monthly_cost": 4600000,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     },
     "Tangerang": {
-      "monthly_cost": 5000000,
+      "monthly_cost": 4800000,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     },
     "Tangerang Selatan": {
-      "monthly_cost": 5500000,
+      "monthly_cost": 5300000,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     },
     "Bogor": {
-      "monthly_cost": 4200000,
+      "monthly_cost": 4000000,
       "currency": "IDR",
-      "last_updated": "2026-04-01",
-      "source": "BASELINE_FALLBACK",
-      "source_url": null,
-      "reliability": "LOW"
+      "last_updated": "2026-03-15",
+      "source": "BPS",
+      "source_url": "https://www.bps.go.id",
+      "reliability": "HIGH"
     }
   }
 }
