@@ -117,7 +117,7 @@ def generate_synthetic_dataset(n_samples: int = 5000) -> pd.DataFrame:
         )
         iti_ratio = min(iti_ratio, 2.0)
 
-        disposable = compute_disposable_income(monthly_salary, monthly_living_cost)
+        disposable = max(compute_disposable_income(monthly_salary, monthly_living_cost), 1000)
 
         rows.append(
             {
@@ -168,7 +168,7 @@ def generate_regression_dataset(n_samples: int = 5000) -> pd.DataFrame:
         goal_cost = generate_goal_cost(goal_type, city)
         timeline_years = np.random.randint(3, 31)
         living_cost_index = round(monthly_living_cost / 1_000_000, 1)
-        disposable = compute_disposable_income(monthly_salary, monthly_living_cost)
+        disposable = max(compute_disposable_income(monthly_salary, monthly_living_cost), 1000)
 
         # Regression target: months needed to reach goal if investing 25% of disposable
         SUSTAINABLE_RATE = 0.25
@@ -177,6 +177,7 @@ def generate_regression_dataset(n_samples: int = 5000) -> pd.DataFrame:
             months_to_goal = goal_cost / monthly_investment_capacity
         else:
             months_to_goal = 999  # effectively unreachable
+        months_to_goal = min(months_to_goal, 600)  # cap at 50 years = 600 months
 
         rows.append(
             {

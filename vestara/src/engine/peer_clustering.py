@@ -15,6 +15,8 @@ Design notes:
   acceptable for single-user deployment (known limitation, COC §4).
 """
 
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
