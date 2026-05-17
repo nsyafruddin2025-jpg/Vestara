@@ -2037,10 +2037,10 @@ elif st.session_state.get("page") == "💼 Portfolio":
 
         if st.button("Generate Optimised Portfolio", use_container_width=True):
             result = build_portfolio(
+                risk_profile=rp["profile"],
+                monthly_contribution=gp["estimated_cost"] / (gp["timeline_years"] * 12),
                 goal_amount=gp["estimated_cost"],
                 timeline_years=gp["timeline_years"],
-                monthly_budget=gp["monthly_budget"],
-                risk_profile=rp["profile_type"],
             )
             st.session_state["portfolio_result"] = result
 
@@ -2063,7 +2063,8 @@ elif st.session_state.get("page") == "💼 Portfolio":
             # Summary metrics
             c1, c2, c3, c4 = st.columns(4)
             with c1:
-                st.markdown(f'''<div class="metric-tile"><div class="metric-label">Monthly Contribution</div><div class="metric-value" style="font-size:1.1rem;">IDR {pr.monthly_contribution:,.0f}</div></div>''', unsafe_allow_html=True)
+                monthly_contribution = gp["estimated_cost"] / (gp["timeline_years"] * 12)
+                st.markdown(f'''<div class="metric-tile"><div class="metric-label">Monthly Contribution</div><div class="metric-value" style="font-size:1.1rem;">IDR {monthly_contribution:,.0f}</div></div>''', unsafe_allow_html=True)
             with c2:
                 st.markdown(f'''<div class="metric-tile"><div class="metric-label">Blended Return</div><div class="metric-value accent" style="font-size:1.1rem;">{pr.blended_return:.2%}</div></div>''', unsafe_allow_html=True)
             with c3:
@@ -2091,13 +2092,10 @@ elif st.session_state.get("page") == "💼 Portfolio":
 
             for alloc in pr.allocations:
                 label = INSTRUMENT_LABELS.get(alloc.instrument, alloc.instrument)
-                risk = alloc.risk_level
-                risk_cls = "high" if risk == "High" else ("medium" if risk == "Medium" else "low")
                 bar_pct = int(alloc.percentage)
                 st.markdown(f'''
                 <div class="alloc-row">
                     <span class="alloc-name">{label}</span>
-                    <span class="risk-badge {risk_cls}" style="font-size:0.65rem;">{risk}</span>
                     <div class="alloc-bar-track"><div class="alloc-bar-fill" style="width:{bar_pct}%;"></div></div>
                     <span class="alloc-pct">{bar_pct}%</span>
                 </div>
@@ -2187,7 +2185,7 @@ elif st.session_state.get("page") == "📈 Dashboard":
             </div>
             <div class="breakdown-row">
                 <span class="breakdown-label">Monthly Budget</span>
-                <span class="breakdown-value">IDR {gp['monthly_budget']:,.0f}</span>
+                <span class="breakdown-value">IDR {gp['estimated_cost'] / (gp['timeline_years'] * 12):,.0f}</span>
             </div>
         </div>
         ''', unsafe_allow_html=True)
@@ -2223,7 +2221,7 @@ elif st.session_state.get("page") == "📈 Dashboard":
             </div>
             <div class="breakdown-row">
                 <span class="breakdown-label">Monthly Contribution</span>
-                <span class="breakdown-value">IDR {pr.monthly_contribution:,.0f}</span>
+                <span class="breakdown-value">IDR {gp['estimated_cost'] / (gp['timeline_years'] * 12):,.0f}</span>
             </div>
             <div class="breakdown-row">
                 <span class="breakdown-label">Blended Return</span>
