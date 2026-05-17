@@ -1,0 +1,14 @@
+{
+  "yogyakarta:kotagede": {
+    "price_per_sqm": 7980619,
+    "last_updated": "2026-05-17"
+  },
+  "jakarta:jakarta_selatan": {
+    "price_per_sqm": 30395029,
+    "last_updated": "2026-05-17"
+  },
+  "bandung:unknown_area": {
+    "price_per_sqm": 12000000,
+    "last_updated": "2026-05-17"
+  }
+}

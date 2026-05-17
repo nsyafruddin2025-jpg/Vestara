@@ -17,11 +17,6 @@ from vestara.src.portfolio.optimizer import build_portfolio
 from vestara.data import cost_data as cd
 from vestara.data.cost_data import LIVING_COST_MONTHLY, INSTRUMENT_RISK_LABELS, BASELINE_FALLBACK_LIVING_COST_MONTHLY
 from vestara.data.fetcher import (
-    fetch_property_prices,
-    fetch_living_costs,
-    get_all_price_data,
-    get_city_property_price,
-    get_city_living_cost,
     BASELINE_FALLBACK_PROPERTY,
     BASELINE_FALLBACK_LIVING,
 )
@@ -47,7 +42,7 @@ def get_salary_bracket(amount: float) -> str:
 def render_cost_breakdown(breakdown):
     if breakdown is None:
         return
-    with st.expander("📊 View cost breakdown"):
+    with st.expander("View cost breakdown"):
         st.markdown(f"""
         <div style="margin-bottom:0.5rem;">
             <span style="color:#94A3B8;font-size:0.85rem;">
@@ -147,16 +142,15 @@ html, body, [data-testid="stApp"] {
   -webkit-font-smoothing: antialiased;
 }
 
-h1 { font-size: 3rem !important; font-weight: 800 !important; color: var(--text-primary) !important; letter-spacing: -0.03em !important; line-height: 1.1 !important; }
-h2 { font-size: 1.6rem !important; font-weight: 700 !important; color: var(--text-primary) !important; letter-spacing: -0.02em !important; line-height: 1.25 !important; }
-h3 { font-size: 1.15rem !important; font-weight: 600 !important; color: var(--text-primary) !important; letter-spacing: -0.01em !important; }
+h1 { font-size: 3rem !important; font-weight: 800 !important; color: #F8FAFC !important; letter-spacing: -0.03em !important; line-height: 1.1 !important; }
+h2 { font-size: 1.6rem !important; font-weight: 700 !important; color: #F8FAFC !important; letter-spacing: -0.02em !important; line-height: 1.25 !important; }
+h3 { font-size: 1.15rem !important; font-weight: 600 !important; color: #F8FAFC !important; letter-spacing: -0.01em !important; }
 h4 { font-size: 1rem !important; font-weight: 600 !important; color: var(--text-secondary) !important; }
 p, span, div, label { color: var(--text-secondary) !important; font-size: 0.9rem !important; line-height: 1.7 !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FLOATING NAVIGATION DOCK
    ═══════════════════════════════════════════════════════════════════════════ */
-[data-testid="stSidebar"] { display: none !important; }
 
 .nav-dock {
   position: fixed;
@@ -196,12 +190,12 @@ p, span, div, label { color: var(--text-secondary) !important; font-size: 0.9rem
   letter-spacing: 0.01em;
 }
 .nav-dock-item:hover {
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   background: var(--bg-glass);
   border-color: var(--border-glass);
 }
 .nav-dock-item.active {
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(34,211,238,0.15));
   border-color: rgba(139,92,246,0.4);
   box-shadow: 0 0 20px rgba(139,92,246,0.2), 0 2px 8px rgba(0,0,0,0.3);
@@ -312,7 +306,7 @@ section[data-testid="stMainBlockContainer"] > div {
   border: 1px solid rgba(139,92,246,0.5);
   border-radius: 999px;
   box-shadow: var(--shadow-pill), 0 0 60px rgba(139,92,246,0.2);
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   font-size: 1.05rem !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em;
@@ -384,12 +378,12 @@ section[data-testid="stMainBlockContainer"] > div {
 }
 .goal-list-container [data-testid="stRadio"] > label:hover {
   background: var(--bg-glass) !important;
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
 }
 
 /* Selected state — violet text + subtle underline dot */
 .goal-list-container [data-testid="stRadio"] label:has([checked]) {
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   font-weight: 600 !important;
   position: relative;
 }
@@ -456,7 +450,7 @@ section[data-testid="stMainBlockContainer"] > div {
 .metric-tile .metric-value {
   font-size: 1.6rem !important;
   font-weight: 800 !important;
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   letter-spacing: -0.02em;
   line-height: 1.1 !important;
 }
@@ -551,7 +545,7 @@ section[data-testid="stMainBlockContainer"] > div {
   color: var(--violet-400) !important;
   margin-bottom: 0.4rem;
 }
-.step-title { font-size: 1.6rem !important; font-weight: 800 !important; color: var(--text-primary) !important; letter-spacing: -0.02em !important; }
+.step-title { font-size: 1.6rem !important; font-weight: 800 !important; color: #F8FAFC !important; letter-spacing: -0.02em !important; }
 .step-subtitle { font-size: 0.9rem !important; color: var(--text-muted) !important; margin-top: 0.25rem !important; }
 
 .progress-track {
@@ -605,7 +599,7 @@ section[data-testid="stMainBlockContainer"] > div {
 [data-testid="stTextArea"] textarea {
   background: rgba(255,255,255,0.05) !important;
   border: 1px solid var(--border-glass) !important;
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
   border-radius: var(--radius-sm) !important;
   font-size: 0.9rem !important;
   padding: 0.7rem 1rem !important;
@@ -624,7 +618,7 @@ section[data-testid="stMainBlockContainer"] > div {
   font-size: 0.88rem !important;
   line-height: 1.6 !important;
 }
-[data-testid="stRadio"] label:hover { color: var(--text-primary) !important; }
+[data-testid="stRadio"] label:hover { color: #F8FAFC !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BUTTONS
@@ -668,7 +662,7 @@ section[data-testid="stMainBlockContainer"] > div {
 .secondary-btn:hover {
   background: var(--bg-glass-hover) !important;
   border-color: var(--violet-500) !important;
-  color: var(--text-primary) !important;
+  color: #F8FAFC !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -773,7 +767,7 @@ section[data-testid="stMainBlockContainer"] > div {
 }
 .breakdown-row:last-child { border-bottom: none; }
 .breakdown-label { color: var(--text-secondary) !important; font-size: 0.88rem !important; }
-.breakdown-value { color: var(--text-primary) !important; font-weight: 600 !important; font-size: 0.88rem !important; }
+.breakdown-value { color: #F8FAFC !important; font-weight: 600 !important; font-size: 0.88rem !important; }
 .breakdown-total {
   display: flex;
   justify-content: space-between;
@@ -784,7 +778,7 @@ section[data-testid="stMainBlockContainer"] > div {
   border-radius: var(--radius-sm);
   margin-top: 0.75rem;
 }
-.breakdown-total-label { color: var(--text-primary) !important; font-weight: 700 !important; font-size: 0.95rem !important; }
+.breakdown-total-label { color: #F8FAFC !important; font-weight: 700 !important; font-size: 0.95rem !important; }
 .breakdown-total-value {
   color: var(--violet-400) !important;
   font-weight: 800 !important;
@@ -849,7 +843,6 @@ footer { visibility: hidden !important; }
 /* ═══════════════════════════════════════════════════════════════════════════
    DIVIDERS & SECTION HEADERS
    ═══════════════════════════════════════════════════════════════════════════ */
-.section-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-glass), transparent);
   margin: 2rem 0;
@@ -888,7 +881,7 @@ footer { visibility: hidden !important; }
 }
 .alloc-row:last-child { border-bottom: none; }
 .alloc-name { font-size: 0.88rem !important; color: var(--text-secondary) !important; flex: 1; }
-.alloc-pct { font-size: 0.88rem !important; font-weight: 700 !important; color: var(--text-primary) !important; width: 48px; text-align: right; }
+.alloc-pct { font-size: 0.88rem !important; font-weight: 700 !important; color: #F8FAFC !important; width: 48px; text-align: right; }
 .alloc-bar-track {
   flex: 2;
   height: 6px;
@@ -901,6 +894,19 @@ footer { visibility: hidden !important; }
   border-radius: 999px;
   background: linear-gradient(90deg, var(--violet-500), var(--cyan-400));
 }
+
+/* Selectbox text color fix */
+[data-testid="stSelectbox"] span {
+    color: #F8FAFC !important;
+}
+[data-testid="stSelectbox"] > div > div {
+    color: #F8FAFC !important;
+    background-color: #1E1E2E !important;
+}
+[data-testid="stSelectbox"] span { color: #F8FAFC !important; }
+[data-testid="stSelectbox"] > div > div { color: #F8FAFC !important; background-color: #1A1A2E !important; }
+details summary { color: #F8FAFC !important; padding-left: 1.5rem !important; }
+details summary p { color: #F8FAFC !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -927,6 +933,16 @@ def nav_dock():
 
 nav_dock()
 
+# ── Sidebar data attribution ──────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("---")
+    st.markdown("**📊 Property data:**")
+    st.markdown("Colliers Indonesia Q1 2025")
+    st.markdown("")
+    st.markdown("🔜 **Coming soon:**")
+    st.markdown("Bandung · Surabaya · Yogyakarta")
+    st.markdown("---")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 1: GOALS
@@ -945,36 +961,45 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
     pct = int(current / total_steps * 100)
     st.markdown(f'<div class="progress-track"><div class="progress-fill" style="width:{pct}%"></div></div>', unsafe_allow_html=True)
 
-    # Goal definitions: (icon, display_label, goal_type_key)
+    # Goal definitions: (icon, display_label, goal_type_key, enabled)
     goals = [
-        ("🏠", "Property", "Property"),
-        ("🎓", "Education", "Education"),
-        ("🎓", "Higher Education", "Higher Education"),
-        ("🌴", "Retirement", "Retirement"),
-        ("💍", "Wedding", "Wedding"),
-        ("🛡️", "Emergency Fund", "Emergency Fund"),
-        ("✨", "Custom", "Custom"),
+        ("🏠", "Property", "Property", True),
+        ("🛡️", "Emergency Fund", "Emergency Fund", True),
+        ("🌴", "Retirement", "Retirement", True),
+        ("🎓", "Education  🔜 Coming Soon", "Education", False),
+        ("🎓", "Higher Education  🔜 Coming Soon", "Higher Education", False),
+        ("💍", "Wedding  🔜 Coming Soon", "Wedding", False),
+        ("✨", "Custom  🔜 Coming Soon", "Custom", False),
     ]
 
     # Build a lookup: display_label -> goal_type_key
-    goal_label_to_type = {label: gtype for _, label, gtype in goals}
+    goal_label_to_type = {label: gtype for _, label, gtype, _ in goals}
 
-    # Radio option strings with icons
-    radio_options = [f"{icon}  {label}" for icon, label, _ in goals]
+    # Active goals only for radio
+    active_goals = [(icon, label, gtype) for icon, label, gtype, enabled in goals if enabled]
 
     st.markdown('<div class="goal-list-container">', unsafe_allow_html=True)
 
-    # Use st.radio for clean borderless selection
+    # Use st.radio for active goals only
+    active_options = [f"{icon}  {label}" for icon, label, _ in active_goals]
     selected_label = st.radio(
         "Select your goal",
-        radio_options,
+        active_options,
         index=0,
         label_visibility="collapsed",
         key="goal_radio",
     )
 
+    # Show coming soon goals as disabled info badges
+    coming_soon = [label for icon, label, _, enabled in goals if not enabled]
+    if coming_soon:
+        st.markdown(
+            "<br>".join(f"<span style='color:#64748B;font-size:0.85rem;'>  {g}</span>" for g in coming_soon),
+            unsafe_allow_html=True,
+        )
+
     selected = ""
-    for icon, label, gtype in goals:
+    for icon, label, gtype in active_goals:
         if f"{icon}  {label}" == selected_label:
             selected = gtype
             break
@@ -995,24 +1020,20 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
 
         goal_type = selected
         steps = STEPS_BY_GOAL.get(goal_type, [])
-        total_goal_steps = len(steps)
+        total_goal_steps = 6 if goal_type == "Property" else len(steps)
         current_step = st.session_state.get("goal_step", 0)
         answers = st.session_state.get("goal_step_answers", {})
 
-        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
         # ── EDUCATION ────────────────────────────────────────────────
         if goal_type == "Education":
             render_progress_bar(current_step + 1, total_goal_steps)
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Education</div>', unsafe_allow_html=True)
-                st.markdown('<div class="step-title">What level is your child starting?</div>', unsafe_allow_html=True)
                 education_level = st.radio("Education level", cd.EDUCATION_LEVELS, index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1026,12 +1047,11 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
 
             elif current_step == 1:
                 render_progress_bar(2, total_goal_steps)
-                st.markdown('<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What type of school?</div>', unsafe_allow_html=True)
                 school_type = st.radio("School type", cd.EDUCATION_SCHOOL_TYPES, index=None)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1041,11 +1061,9 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 2
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 2:
                 render_progress_bar(3, total_goal_steps)
-                st.markdown('<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How old is your child now?</div>', unsafe_allow_html=True)
                 child_age = st.number_input("Child's current age", min_value=0, max_value=20, value=6, step=1)
                 education_level = answers.get("education_level", "Primary")
@@ -1058,7 +1076,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="entry-info" style="border-color:#EF4444;"><strong>Note:</strong> Your child is already past the entry age for {education_level}. Cost is calculated from today.</div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
@@ -1067,16 +1085,14 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 3
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 3:
                 render_progress_bar(4, total_goal_steps)
-                st.markdown('<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city will your child attend school in?</div>', unsafe_allow_html=True)
-                city = st.selectbox("City", GoalBuilder.CITIES, index=0)
+                city = st.radio("City", GoalBuilder.CITIES, index=0, key="education_city_radio", horizontal=False)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
                 with col_s:
@@ -1085,12 +1101,10 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 4
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 4:
                 render_progress_bar(5, total_goal_steps)
                 answers["city"] = answers.get("city", GoalBuilder.CITIES[0])
-                st.markdown('<div class="step-label">Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 col1, col2 = st.columns(2)
                 with col1:
@@ -1114,10 +1128,10 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
                 col_b, _ = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -1127,12 +1141,11 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             render_progress_bar(current_step + 1, total_goal_steps)
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Higher Education</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What degree is your child aiming for?</div>', unsafe_allow_html=True)
                 degree_level = st.radio("Degree level", cd.HIGHER_ED_DEGREE_LEVELS, index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1151,7 +1164,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 location = st.radio("Study location", ["In Indonesia", "Abroad"], index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1174,7 +1187,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 country = st.selectbox("Country", ["Indonesia"] + cd.HIGHER_ED_ABROAD_COUNTRIES, index=None, placeholder="Select country" if location == "Abroad" else None)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
@@ -1193,7 +1206,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 field = st.selectbox("Field of study", cd.HIGHER_ED_FIELDS, index=None, placeholder="Select field")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
                 with col_s:
@@ -1215,7 +1228,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown(f"""<div class="entry-info">Enrollment year: <strong>{enrollment_yr}</strong> ({years_until} year{"s" if years_until != 1 else ""} from now)</div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
                 with col_s:
@@ -1252,8 +1265,8 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
-                if st.button("← Back"):
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                if st.button("< Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -1263,12 +1276,10 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             current_year = cd.get_current_year()
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
-                st.markdown('<div class="step-title">What type of property?</div>', unsafe_allow_html=True)
                 property_type = st.radio("Property type", cd.PROPERTY_TYPES, index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1282,12 +1293,12 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
 
             elif current_step == 1:
                 render_progress_bar(2, total_goal_steps)
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city?</div>', unsafe_allow_html=True)
-                city = st.selectbox("City", GoalBuilder.CITIES, index=0, key="property_city_select")
+                city = st.selectbox("City", cd.ACTIVE_CITIES, key="city_main")
+                st.caption("🔜 Bandung, Surabaya, Yogyakarta — Coming Soon")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1296,33 +1307,30 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 2
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 2:
                 render_progress_bar(3, total_goal_steps)
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
-                st.markdown('<div class="step-title">Which neighbourhood? (optional)</div>', unsafe_allow_html=True)
-                area = st.text_input("Area / Neighbourhood (optional)", placeholder="e.g. Kemang, Senayan, Menteng", label_visibility="collapsed")
+                st.markdown('<div class="step-title">Which area?</div>', unsafe_allow_html=True)
+                city = answers.get("city", "Jakarta")
+                area = st.selectbox("Area", cd.CITY_AREAS.get(city, []), key="city_area")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
                     if st.button("Next →", type="primary"):
-                        answers["area"] = area or ""
+                        answers["area"] = area
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 3
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 3:
                 render_progress_bar(4, total_goal_steps)
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
-                property_type = answers.get("property_type", "Apartment")
-                size_options = cd.PROPERTY_SIZES_BY_TYPE.get(property_type, list(cd.APARTMENT_SIZES.keys()))
+                property_type = st.session_state.get("goal_step_answers", {}).get("property_type", "Apartment")
+                sizes = cd.PROPERTY_SIZES_BY_TYPE.get(property_type, list(cd.APARTMENT_SIZES.keys()))
                 st.markdown('<div class="step-title">What size is the property?</div>', unsafe_allow_html=True)
-                size = st.selectbox("Size", size_options, index=None, placeholder="Select size")
+                size = st.selectbox("Size", sizes, index=None, placeholder="Select size", key="property_size_select")
                 show_custom_building = (size == "Custom" and property_type in ("Landed House", "Shophouse / Ruko"))
                 show_custom_land = (size == "Custom" and property_type in ("Landed House", "Land Only", "Shophouse / Ruko"))
                 custom_building = None
@@ -1333,7 +1341,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     custom_total = st.number_input("Total land area (sqm)", min_value=1, value=200, step=1)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
                 with col_s:
@@ -1347,17 +1355,15 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                             st.session_state["goal_step_answers"] = answers
                             st.session_state["goal_step"] = 4
                             st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 4:
                 render_progress_bar(5, total_goal_steps)
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">When do you plan to purchase?</div>', unsafe_allow_html=True)
                 target_year = st.slider("Target purchase year", min_value=current_year, max_value=current_year + 20, value=current_year + 10, step=1)
                 st.markdown(f"""<div class="entry-info">Target: <strong>{target_year}</strong> <span class="current-year-badge">{current_year}</span></div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
                 with col_s:
@@ -1366,11 +1372,9 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                         st.session_state["goal_step_answers"] = answers
                         st.session_state["goal_step"] = 5
                         st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
             elif current_step == 5:
-                render_progress_bar(6, total_goal_steps)
-                st.markdown('<div class="step-label">Property</div>', unsafe_allow_html=True)
+                render_progress_bar(current_step + 1, total_goal_steps)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 ptype = answers.get("property_type", "-")
                 city = answers.get("city", "-")
@@ -1390,18 +1394,16 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
-                if st.button("← Back"):
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                if st.button("< Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
 
         # ── RETIREMENT ─────────────────────────────────────────────
         elif goal_type == "Retirement":
             render_progress_bar(current_step + 1, total_goal_steps)
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How old are you now?</div>', unsafe_allow_html=True)
                 current_age = st.number_input("Current age", min_value=18, max_value=70, value=25, step=1)
                 if st.button("Next →", type="primary"):
@@ -1421,7 +1423,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown(f"""<div class="entry-info">You have <strong>{years_to_save} years</strong> to build your retirement fund</div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1436,10 +1438,11 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 render_progress_bar(3, total_goal_steps)
                 st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Which city do you plan to retire in?</div>', unsafe_allow_html=True)
-                city = st.selectbox("Retirement city", GoalBuilder.CITIES, index=0)
+                city = st.selectbox("City", cd.ACTIVE_CITIES, key="retirement_city_main")
+                st.caption("🔜 Bandung, Surabaya, Yogyakarta — Coming Soon")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
@@ -1453,6 +1456,25 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             elif current_step == 3:
                 render_progress_bar(4, total_goal_steps)
                 st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
+                st.markdown('<div class="step-title">Which area?</div>', unsafe_allow_html=True)
+                city = answers.get("city", "Jakarta")
+                area = st.selectbox("Area", cd.CITY_AREAS.get(city, []), key="retirement_city_area")
+                col_b, col_s = st.columns([1, 1])
+                with col_b:
+                    if st.button("< Back"):
+                        st.session_state["goal_step"] = 2
+                        st.rerun()
+                with col_s:
+                    if st.button("Next →", type="primary"):
+                        answers["area"] = area
+                        st.session_state["goal_step_answers"] = answers
+                        st.session_state["goal_step"] = 4
+                        st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            elif current_step == 4:
+                render_progress_bar(5, total_goal_steps)
+                st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What lifestyle do you want in retirement?</div>', unsafe_allow_html=True)
                 lifestyle = st.radio("Lifestyle", cd.RETIREMENT_LIFESTYLE_OPTIONS, index=None, label_visibility="collapsed")
                 show_custom = (lifestyle and "Custom" in lifestyle)
@@ -1461,20 +1483,20 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     answers["custom_monthly"] = custom_monthly
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
-                        st.session_state["goal_step"] = 2
+                    if st.button("< Back"):
+                        st.session_state["goal_step"] = 3
                         st.rerun()
                 with col_s:
                     if st.button("Next →", type="primary"):
                         if lifestyle:
                             answers["lifestyle"] = lifestyle
                             st.session_state["goal_step_answers"] = answers
-                            st.session_state["goal_step"] = 4
+                            st.session_state["goal_step"] = 5
                             st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            elif current_step == 4:
-                render_progress_bar(5, total_goal_steps)
+            elif current_step == 5:
+                render_progress_bar(6, total_goal_steps)
                 st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What life expectancy do you assume?</div>', unsafe_allow_html=True)
                 life_options = [75, 80, 85, "Custom — enter my own assumption"]
@@ -1488,28 +1510,29 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown(f"""<div class="entry-info">Retirement duration: <strong>{years_in_retirement} years</strong> (age {retirement_age} → {life_expectancy})</div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
-                        st.session_state["goal_step"] = 3
+                    if st.button("< Back"):
+                        st.session_state["goal_step"] = 4
                         st.rerun()
                 with col_s:
                     if st.button("Next →", type="primary"):
                         answers["life_expectancy"] = life_expectancy
                         st.session_state["goal_step_answers"] = answers
-                        st.session_state["goal_step"] = 5
+                        st.session_state["goal_step"] = 6
                         st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            elif current_step == 5:
-                render_progress_bar(6, total_goal_steps)
+            elif current_step == 6:
+                render_progress_bar(7, total_goal_steps)
                 st.markdown('<div class="step-label">Retirement</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">Review your selections</div>', unsafe_allow_html=True)
                 cur = answers.get("current_age", 0)
                 ret = answers.get("retirement_age", 0)
                 city = answers.get("city", "-")
+                area = answers.get("area", "-")
                 lifestyle = answers.get("lifestyle", "-")
                 life_exp = answers.get("life_expectancy", 80)
                 st.markdown(f"**Current age:** {cur} &nbsp;&nbsp; **Retirement age:** {ret}")
-                st.markdown(f"**City:** {city} &nbsp;&nbsp; **Lifestyle:** {lifestyle}")
+                st.markdown(f"**City:** {city} &nbsp;&nbsp; **Area:** {area} &nbsp;&nbsp; **Lifestyle:** {lifestyle}")
                 st.markdown(f"**Life expectancy:** {life_exp}")
                 if st.button("Calculate Goal Cost", type="primary", use_container_width=True):
                     gb = GoalBuilder()
@@ -1520,8 +1543,8 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
-                if st.button("← Back"):
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                if st.button("< Back"):
                     st.session_state["goal_step"] = 4
                     st.rerun()
                 st.markdown('</div>', unsafe_allow_html=True)
@@ -1531,7 +1554,6 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             render_progress_bar(current_step + 1, total_goal_steps)
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Emergency Fund</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What is your monthly take-home salary?</div>', unsafe_allow_html=True)
                 monthly_salary = st.number_input("Monthly take-home salary (IDR)", min_value=500_000, max_value=500_000_000, value=15_000_000, step=500_000)
                 bracket = get_salary_bracket(monthly_salary)
@@ -1550,7 +1572,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 monthly_expenses = st.number_input("Monthly fixed expenses (IDR)", min_value=100_000, max_value=500_000_000, value=5_000_000, step=500_000)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1568,7 +1590,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 coverage = st.radio("Coverage duration", cd.EMERGENCY_FUND_COVERAGE_OPTIONS, index=None, label_visibility="collapsed")
                 col_b, _ = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 st.markdown("")
@@ -1582,7 +1604,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Emergency Fund Target</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description}</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
                 st.markdown('</div>', unsafe_allow_html=True)
 
         # ── WEDDING ────────────────────────────────────────────────
@@ -1591,12 +1613,11 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             current_year = cd.get_current_year()
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">How many guests are you planning for?</div>', unsafe_allow_html=True)
                 scale = st.radio("Wedding scale", cd.WEDDING_SCALES, index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1612,10 +1633,10 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 render_progress_bar(2, total_goal_steps)
                 st.markdown('<div class="step-label">Wedding</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">In which city will the wedding be held?</div>', unsafe_allow_html=True)
-                city = st.selectbox("City", GoalBuilder.CITIES, index=0)
+                city = st.radio("City", GoalBuilder.CITIES, index=0, key="wedding_city_radio", horizontal=False)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
@@ -1635,7 +1656,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown(f"""<div class="entry-info"><strong>{years} year{"s" if years != 1 else ""}</strong> from now (year {target_year})</div>""", unsafe_allow_html=True)
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 with col_s:
@@ -1653,7 +1674,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 venue = st.radio("Venue", cd.WEDDING_VENUES, index=None, label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 2
                         st.rerun()
                 with col_s:
@@ -1673,7 +1694,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown("**Catering:** Standard (included in base cost)")
                 col_b, _ = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 3
                         st.rerun()
                 st.markdown("")
@@ -1688,7 +1709,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
                 st.markdown('</div>', unsafe_allow_html=True)
 
         # ── CUSTOM ─────────────────────────────────────────────────
@@ -1696,12 +1717,11 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
             render_progress_bar(current_step + 1, total_goal_steps)
 
             if current_step == 0:
-                st.markdown('<div class="step-label">Custom Goal</div>', unsafe_allow_html=True)
                 st.markdown('<div class="step-title">What is this goal called?</div>', unsafe_allow_html=True)
                 goal_name = st.text_input("Goal name", placeholder="e.g. Starting a business, Buying a car...", label_visibility="collapsed")
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1723,7 +1743,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     answers["target_amount"] = target_amount
                 col_b, col_s = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 0
                         st.rerun()
                 with col_s:
@@ -1745,7 +1765,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                 st.markdown(f"""<div class="entry-info"><strong>{years} year{"s" if years != 1 else ""}</strong> from now (year {target_year})</div>""", unsafe_allow_html=True)
                 col_b, _ = st.columns([1, 1])
                 with col_b:
-                    if st.button("← Back"):
+                    if st.button("< Back"):
                         st.session_state["goal_step"] = 1
                         st.rerun()
                 st.markdown("")
@@ -1759,7 +1779,7 @@ if st.session_state.get("page", "🏠 Goals") == "🏠 Goals":
                     st.markdown(f"""<div class="glass-card" style="border: 1.5px solid rgba(139,92,246,0.4);margin-top:1rem;"><div style="text-align:center;"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94A3B8;margin-bottom:0.5rem;">Projected Total Cost</div><div style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#8B5CF6,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{format_idr(profile.estimated_cost)}</div><div style="font-size:0.9rem;color:#94A3B8;margin-top:0.5rem;">{profile.description} &nbsp;&middot;&nbsp; {profile.timeline_years} years to goal</div></div></div>""", unsafe_allow_html=True)
                     if profile.breakdown:
                         render_cost_breakdown(profile.breakdown)
-                    st.info("&#8592; Proceed to **Feasibility Analysis** to check if this goal is achievable.")
+                    st.info("<- Proceed to **Feasibility Analysis** to check if this goal is achievable.")
                 st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
@@ -1812,13 +1832,16 @@ elif st.session_state.get("page") == "📊 Feasibility":
                 disposable_income=disposable,
             )
 
+            confidence_map = {"HIGH": 85, "MEDIUM": 60, "LOW": 35}
+            feasibility_score = confidence_map.get(ml_result.confidence, 60)
+
             result = {
                 "ratio": ml_result.confidence,
                 "monthly_surplus": available,
                 "existing_investments": existing,
-                "required_monthly": gp["required_savings"],
+                "required_monthly": gp["estimated_cost"] / (gp["timeline_years"] * 12),
                 "verdict": ml_result.verdict,
-                "feasibility_score": min(int(ml_result.confidence * 100), 100),
+                "feasibility_score": feasibility_score,
                 "predicted_months": ml_result.predicted_months,
                 "confidence": ml_result.confidence,
             }
@@ -1840,7 +1863,7 @@ elif st.session_state.get("page") == "📊 Feasibility":
                     <span class="verdict-badge {fr['verdict']}">
                         {'✓ Achievable' if fr['verdict']=='green' else ('⚠ Tight Fit' if fr['verdict']=='yellow' else '✗ Not Feasible')}
                     </span>
-                    <span class="verdict-badge violet">Investment Ratio: {fr['ratio']:.0%}</span>
+                    <span class="verdict-badge violet">Investment Ratio: {fr['ratio']}</span>
                 </div>
             </div>
             ''', unsafe_allow_html=True)
@@ -1927,37 +1950,47 @@ elif st.session_state.get("page") == "🎯 Risk Profile":
 
     with st.form("risk_form"):
         for i, q in enumerate(RISK_QUESTIONS):
-            q_key = f"risk_q_{i}"
-            current = st.session_state.get(q_key, None)
-            st.markdown(f'<div class="glass-card-sm" style="margin-bottom:1rem;">', unsafe_allow_html=True)
+            st.markdown('<div class="glass-card-sm" style="margin-bottom:1rem;padding:1rem;">', unsafe_allow_html=True)
             st.markdown(f'<div style="margin-bottom:0.75rem;color:var(--text-primary);font-weight:600;font-size:0.92rem;">{i+1}. {q["question"]}</div>', unsafe_allow_html=True)
-            cols_q = st.columns(len(q["options"]))
-            for j, opt in enumerate(q["options"]):
-                with cols_q[j]:
-                    selected = st.radio(
-                        label=opt["label"],
-                        options=[opt["label"]],
-                        key=q_key,
-                        index=0 if current == opt["label"] else -1,
-                        label_visibility="visible",
-                    )
+            option_texts = [opt["text"] for opt in q["options"]]
+            selected = st.radio(
+                label=" ",
+                options=option_texts,
+                key=f"risk_q_{i}",
+                index=None,
+                label_visibility="collapsed",
+                format_func=lambda x: x,
+            )
             st.markdown('</div>', unsafe_allow_html=True)
 
         submitted = st.form_submit_button("Calculate My Risk Profile", use_container_width=True)
 
     if submitted or st.session_state.get("risk_profile_set"):
-        answers = {f"risk_q_{i}": st.session_state.get(f"risk_q_{i}") for i in range(len(RISK_QUESTIONS))}
-        answers = {k: v for k, v in answers.items() if v}
+        # Build answers dict from per-question radio keys (risk_q_{i})
+        answers = {}
+        for i, q in enumerate(RISK_QUESTIONS):
+            selected_text = st.session_state.get(f"risk_q_{i}")
+            if selected_text:
+                answers[q["id"]] = selected_text
         st.session_state["risk_answers"] = answers
 
         if len(answers) >= 5:
-            profile = rp.calculate_profile(answers)
-            st.session_state["risk_profile"] = profile
-            st.session_state["risk_profile_set"] = True
+            rp.reset()
+            for qid, selected_text in answers.items():
+                for q in RISK_QUESTIONS:
+                    if q["id"] == qid:
+                        for opt in q["options"]:
+                            if opt["text"] == selected_text:
+                                rp.submit_answer(qid, opt["score"])
+                                break
+            profile = rp.get_profile()
+            if profile:
+                st.session_state["risk_profile"] = {"profile": profile.profile, "score": profile.score}
+                st.session_state["risk_profile_set"] = True
 
     if st.session_state.get("risk_profile_set"):
         rp_data = st.session_state["risk_profile"]
-        profile_type = rp_data["profile_type"]
+        profile_type = rp_data["profile"]
         score = rp_data["score"]
 
         type_colors = {"konservatif": "#22D3EE", "moderat": "#8B5CF6", "agresif": "#F59E0B"}
@@ -1975,20 +2008,6 @@ elif st.session_state.get("page") == "🎯 Risk Profile":
                 <span class="risk-badge {'low' if profile_type=='konservatif' else ('medium' if profile_type=='moderat' else 'high')}">
                     {'Lower Risk · Lower Return' if profile_type=='konservatif' else ('Balanced Risk · Balanced Return' if profile_type=='moderat' else 'Higher Risk · Higher Return')}
                 </span>
-            </div>
-            <div class="glass-card-sm" style="margin-top:1.5rem;text-align:left;">
-                <div class="breakdown-row">
-                    <span class="breakdown-label">Equity Allocation</span>
-                    <span class="breakdown-value">{rp_data['equity_pct']:.0%}</span>
-                </div>
-                <div class="breakdown-row">
-                    <span class="breakdown-label">Fixed Income</span>
-                    <span class="breakdown-value">{rp_data['fixed_income_pct']:.0%}</span>
-                </div>
-                <div class="breakdown-row">
-                    <span class="breakdown-label">Cash / Alternatives</span>
-                    <span class="breakdown-value">{rp_data['cash_pct']:.0%}</span>
-                </div>
             </div>
         </div>
         ''', unsafe_allow_html=True)
@@ -2151,7 +2170,6 @@ elif st.session_state.get("page") == "📈 Dashboard":
 
     if has_goal:
         gp = st.session_state["goal_profile"]
-        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="section-title">Goal Summary</div>', unsafe_allow_html=True)
         st.markdown(f'''
         <div class="glass-card">
@@ -2176,7 +2194,6 @@ elif st.session_state.get("page") == "📈 Dashboard":
 
     if has_feasibility:
         fr = st.session_state["feasibility_result"]
-        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="section-title">Feasibility Summary</div>', unsafe_allow_html=True)
         st.markdown(f'''
         <div class="glass-card">
@@ -2186,7 +2203,7 @@ elif st.session_state.get("page") == "📈 Dashboard":
             </div>
             <div class="breakdown-row">
                 <span class="breakdown-label">Investment Ratio</span>
-                <span class="breakdown-value">{fr['ratio']:.0%}</span>
+                <span class="breakdown-value">{fr['ratio']}</span>
             </div>
             <div class="breakdown-row">
                 <span class="breakdown-label">Monthly Surplus</span>
@@ -2197,7 +2214,6 @@ elif st.session_state.get("page") == "📈 Dashboard":
 
     if has_portfolio:
         pr = st.session_state["portfolio_result"]
-        st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="section-title">Portfolio Summary</div>', unsafe_allow_html=True)
         st.markdown(f'''
         <div class="glass-card">

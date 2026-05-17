@@ -31,11 +31,12 @@ EDUCATION_STEPS = [
 ]
 
 RETIREMENT_STEPS = [
-    {"id": "current_age",       "label": "Current age",        "total": 5},
-    {"id": "retirement_age",   "label": "Retirement age",      "total": 5},
-    {"id": "city",             "label": "City",               "total": 5},
-    {"id": "lifestyle",        "label": "Lifestyle",           "total": 5},
-    {"id": "life_expectancy",  "label": "Life expectancy",    "total": 5},
+    {"id": "current_age",       "label": "Current age",        "total": 7},
+    {"id": "retirement_age",   "label": "Retirement age",      "total": 7},
+    {"id": "city",             "label": "City",               "total": 7},
+    {"id": "area",             "label": "Area",                "total": 7},
+    {"id": "lifestyle",        "label": "Lifestyle",           "total": 7},
+    {"id": "life_expectancy",  "label": "Life expectancy",    "total": 7},
 ]
 
 HIGHER_ED_STEPS = [
@@ -330,7 +331,7 @@ def calculate_property(
     years_to_purchase = max(target_year - current_year, 0)
     inflation_rate = cd.PROPERTY_INFLATION_RATE
 
-    price_per_sqm = cd.APARTMENT_PRICE_PER_SQM.get(city, cd.APARTMENT_PRICE_PER_SQM["Jakarta Selatan"])
+    price_per_sqm = cd.APARTMENT_PRICE_PER_SQM.get(area, cd.APARTMENT_PRICE_PER_SQM.get(city, 25_000_000))
 
     if property_type == "Apartment":
         building_sqm = cd.APARTMENT_SIZES.get(size_label, 55)
@@ -375,7 +376,7 @@ def calculate_property(
         CostBreakdownItem(
             "Current price per sqm",
             price_per_sqm,
-            f"{city}",
+            f"{area}",
         ),
         CostBreakdownItem(
             "Property type",
@@ -728,9 +729,9 @@ class GoalBuilder:
                 custom_total_sqm=float(custom_t) if custom_t else None,
             )
             ptype = step_answers.get("property_type", "Apartment")
-            city = step_answers.get("city", "Jakarta Selatan")
+            area = step_answers.get("area", step_answers.get("city", "Jakarta"))
             size = step_answers.get("size", "2BR")
-            description = f"{size} {ptype} in {city}"
+            description = f"{size} {ptype} in {area}"
 
         elif gtype == "Retirement":
             life_exp = step_answers.get("life_expectancy", 80)
@@ -745,8 +746,8 @@ class GoalBuilder:
                 custom_monthly=float(step_answers.get("custom_monthly")) if "Custom" in step_answers.get("lifestyle", "") else None,
             )
             ret_age = step_answers.get("retirement_age", 55)
-            city = step_answers.get("city", "Jakarta Selatan")
-            description = f"Retirement at age {ret_age} in {city}"
+            area = step_answers.get("area", step_answers.get("city", "Jakarta Selatan"))
+            description = f"Retirement at age {ret_age} in {area}"
 
         elif gtype == "Emergency Fund":
             coverage_str = step_answers.get("coverage", "6 months")

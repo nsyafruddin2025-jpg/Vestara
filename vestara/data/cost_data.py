@@ -5,6 +5,23 @@ All values in IDR unless otherwise noted.
 
 import datetime
 
+# ══════════════════════════════════════════════════════════════════════
+# CITY SCOPE (launch = Jakarta only)
+# ══════════════════════════════════════════════════════════════════════
+
+ACTIVE_CITIES = ["Jakarta"]
+COMING_SOON_CITIES = ["Bandung", "Surabaya", "Yogyakarta"]
+
+CITY_AREAS = {
+    "Jakarta": [
+        "Jakarta Selatan",
+        "Jakarta Pusat",
+        "Jakarta Utara",
+        "Jakarta Timur",
+        "Jakarta Barat",
+    ],
+}
+
 # ══════════════════════════════════════════════════════════════
 # INFLATION & ADJUSTMENT RATES
 # ══════════════════════════════════════════════════════════════
@@ -155,26 +172,12 @@ HIGHER_ED_FIELDS = list(HIGHER_ED_FIELD_MULTIPLIER.keys())
 # ══════════════════════════════════════════════════════════════════════
 
 BASELINE_FALLBACK_APARTMENT_PRICE_PER_SQM: dict[str, int] = {
-    # Core 10 cities
-    "Jakarta Selatan": 42_000_000,
-    "Jakarta Pusat": 38_000_000,
-    "Jakarta Utara": 28_000_000,
-    "Bandung": 14_000_000,
-    "Surabaya": 16_000_000,
-    "Yogyakarta": 10_000_000,
-    "Medan": 9_000_000,
-    "Bali (Denpasar)": 22_000_000,
-    "Semarang": 8_500_000,
-    "Makassar": 11_000_000,
-    # Jakarta missing districts (added from Numbeo directional data)
-    "Jakarta Timur": 25_000_000,
-    "Jakarta Barat": 30_000_000,
-    # Jabodetabek areas
-    "Depok": 18_000_000,
-    "Bekasi": 20_000_000,
-    "Tangerang": 22_000_000,
-    "Tangerang Selatan": 26_000_000,
-    "Bogor": 15_000_000,
+    # Jakarta areas — Colliers Indonesia Q1 2025 verified prices
+    "Jakarta Selatan": 35_000_000,
+    "Jakarta Pusat": 23_000_000,
+    "Jakarta Utara": 22_000_000,
+    "Jakarta Timur": 18_000_000,
+    "Jakarta Barat": 24_000_000,
 }
 
 # Legacy alias — DEPRECATED, use BASELINE_FALLBACK_APARTMENT_PRICE_PER_SQM
