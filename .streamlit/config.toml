@@ -3,3 +3,6 @@ headless = true
 
 [runner]
 pythonPath = ["."]
+
+[general]
+python = "3.11"
