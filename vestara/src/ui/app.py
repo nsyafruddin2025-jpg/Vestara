@@ -22,6 +22,12 @@ from vestara.data.fetcher import (
     BASELINE_FALLBACK_LIVING,
 )
 
+st.set_page_config(
+    page_title="Vestara — Plan Your Life, Then Your Investment",
+    page_icon="🏔️",
+    layout="wide",
+)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPER FUNCTIONS
@@ -77,13 +83,6 @@ def render_progress_bar(current: int, total: int) -> None:
         <div class="progress-fill" style="width:{int(pct * 100)}%;"></div>
     </div>
     """, unsafe_allow_html=True)
-
-
-st.set_page_config(
-    page_title="Vestara — Plan Your Life, Then Your Investment",
-    page_icon="🏔️",
-    layout="wide",
-)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
