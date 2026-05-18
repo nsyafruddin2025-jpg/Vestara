@@ -613,6 +613,17 @@ section[data-testid="stMainBlockContainer"] > div {
   box-shadow: 0 0 0 3px rgba(139,92,246,0.12) !important;
   background: rgba(255,255,255,0.07) !important;
 }
+/* Broad input selectors for light-on-dark visibility */
+input[type="number"], input[type="text"],
+.stNumberInput input, .stTextInput input,
+.stSelectbox div[data-baseweb="select"] span {
+  color: #F8FAFC !important;
+}
+/* Number input dark text on light bg — fixes white-on-white on feasibility page */
+.stNumberInput input {
+  color: #1a1a1a !important;
+  background-color: #ffffff !important;
+}
 [data-testid="stRadio"] label {
   color: var(--text-secondary) !important;
   font-size: 0.88rem !important;
@@ -903,8 +914,6 @@ footer { visibility: hidden !important; }
     color: #F8FAFC !important;
     background-color: #1E1E2E !important;
 }
-[data-testid="stSelectbox"] span { color: #F8FAFC !important; }
-[data-testid="stSelectbox"] > div > div { color: #F8FAFC !important; background-color: #1A1A2E !important; }
 details summary { color: #F8FAFC !important; padding-left: 1.5rem !important; }
 details summary p { color: #F8FAFC !important; }
 </style>
